@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Overview</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Financial Overview</h1>
+    <canvas id="expenseChart" width="400" height="200"></canvas>
+    <canvas id="incomeChart" width="400" height="200"></canvas>
+    <canvas id="investmentChart" width="400" height="200"></canvas>
+    <script>
+        // Example of fetching data and rendering a chart with Chart.js
+        fetch('/fetch_expense_data/')
+            .then(response => response.json())
+            .then(data => {
+                var ctx = document.getElementById('expenseChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Expenses',
+                            data: data.values,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
