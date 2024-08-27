@@ -42,23 +42,6 @@ Ensure you have Python and pip installed. Create and activate a virtual environm
 
     python manage.py runserver
 
-### Set Up Flutter Environment
-
-Ensure you have Flutter installed and set up correctly. For detailed instructions, visit the Flutter Installation Guide.
-
-Navigate to the `flutter-app` directory and get dependencies:
-
-    cd flutter-app
-    flutter pub get
-
-### Run the Flutter Application
-
-Ensure a device is connected or an emulator is running, then execute:
-
-    flutter run
-
-## Usage
-
 ### Start the Web Application
 
 Open your browser and go to `http://127.0.0.1:8000` to view the Finance Dashboard.
@@ -66,6 +49,7 @@ Open your browser and go to `http://127.0.0.1:8000` to view the Finance Dashboar
 ### Scan the QR Code
 
 Use the Flutter mobile app to scan the QR code displayed on the dashboard to upload financial data.
+Flutter mobile app: https://github.com/ManuelCLopes/finance_tracker
 
 ### View Data
 
