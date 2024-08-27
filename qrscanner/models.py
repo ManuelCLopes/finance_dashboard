@@ -1,7 +1,6 @@
 from django.db import models
 
 class Expense(models.Model):
-    id = models.CharField(max_length=100, primary_key=True)
     category = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date_spent = models.DateField()
@@ -10,7 +9,6 @@ class Expense(models.Model):
         return f"{self.user_id} - {self.amount} on {self.date_spent}"
 
 class Income(models.Model):
-    id = models.CharField(max_length=100, primary_key=True)
     category = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     tax_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -20,7 +18,6 @@ class Income(models.Model):
         return f"{self.user_id} - {self.amount} received on {self.date_received}"
 
 class Investment(models.Model):
-    id = models.CharField(max_length=100, primary_key=True)
     symbol = models.CharField(max_length=10, null=True, blank=True)
     investment_type = models.CharField(max_length=50, null=True, blank=True)
     initial_value = models.DecimalField(max_digits=15, decimal_places=2)
