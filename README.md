@@ -49,7 +49,6 @@ Open your browser and go to `http://127.0.0.1:8000` to view the Finance Dashboar
 ### Scan the QR Code
 
 Use the [Flutter mobile app](https://github.com/ManuelCLopes/finance_tracker) to scan the QR code displayed on the dashboard to upload financial data.
-Flutter mobile app: https://github.com/ManuelCLopes/finance_tracker
 
 ### View Data
 
