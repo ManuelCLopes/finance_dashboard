@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.table tr:nth-child(even)').forEach(row => {
             row.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_LIGHT_GRAY;
         });
-        
     }
 
     function updateChartColors() {
@@ -100,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/fetch_data/')
             .then(response => response.json())
             .then(data => {
+                console.log('Fetched Data:', data); // Log fetched data for debugging
                 if (data.data_available) {
                     document.getElementById('qr-code-container').style.display = 'none';
                     document.getElementById('charts-container').style.display = 'block';
@@ -113,28 +113,54 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderCharts(data) {
-        // Get the theme-specific colors
         const theme = document.documentElement.getAttribute('data-theme') || 'light';
         const colors = getThemeColors(theme);
-
-        // Expenses Chart
+    
+        // Aggregate the income data by month for the line chart
+        const aggregatedIncomeData = aggregateDataByMonth(data.incomes);
+        console.log('Aggregated Income Data:', aggregatedIncomeData); // Log aggregated data for debugging
+    
+        // Render each chart as before
         charts.push(drawChart('expensesChart', 'bar', data.expenses, 'Expenses', colors.expense, colors.expense));
-
-        // Incomes Chart
         charts.push(drawChart('incomesChart', 'bar', data.incomes, 'Incomes', colors.income, colors.income));
-
-        // Investments Chart
         charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
-
-        // Expenses Pie Chart
         charts.push(drawPieChart('expensesPieChart', data.expenses, 'Expenses Distribution', [colors.expense, colors.income]));
-
-        // Income Line Chart
-        charts.push(drawLineChart('incomeLineChart', data.incomes, 'Income Over Time', colors.line));
-
-        // Investments Stacked Bar Chart
+        charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
         charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
     }
+
+    function aggregateDataByMonth(data) {
+        if (typeof data !== 'object' || !Array.isArray(data.labels) || !Array.isArray(data.values)) {
+            console.error('Data format is incorrect:', data);
+            return { labels: [], values: [] };
+        }
+    
+        const monthlyData = {};
+        const labels = data.labels;
+        const values = data.values.map(value => parseFloat(value)); // Convert string to number
+    
+        labels.forEach((label, index) => {
+            // Assuming label is in format 'Salário' or similar, need to extract date from index or another structure if possible
+            // Here I will assume a dummy date, you need to replace this with actual date extraction logic
+            const date = new Date(); // Replace with actual logic to extract date
+            const month = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
+    
+            if (!monthlyData[month]) {
+                monthlyData[month] = 0;
+            }
+    
+            monthlyData[month] += values[index]; // Aggregate values by month
+        });
+    
+        console.log('Monthly Data Aggregation:', monthlyData); // Log to debug aggregation
+    
+        return {
+            labels: Object.keys(monthlyData),
+            values: Object.values(monthlyData)
+        };
+    }
+    
+    
 
     function getThemeColors(theme) {
         if (theme === 'dark') {
@@ -197,7 +223,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function drawLineChart(canvasId, chartData, label, borderColor) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+    
+        // Set canvas height and width dynamically if needed
+        canvas.height = 400;  // Set your desired height
+        canvas.width = canvas.parentElement.offsetWidth;  // Match the parent's width if desired
+    
         return new Chart(ctx, {
             type: 'line',
             data: {
@@ -214,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
             options: getLineChartOptions()
         });
     }
+    
 
     function drawStackedBarChart(canvasId, chartData, colors) {
         const ctx = document.getElementById(canvasId).getContext('2d');
