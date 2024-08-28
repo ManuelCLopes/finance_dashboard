@@ -15,38 +15,35 @@ def receive_all_data(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body.decode('utf-8'))
-            
+
             # Clear previous data if needed
             Expense.objects.all().delete()
             Income.objects.all().delete()
             Investment.objects.all().delete()
 
             # Save Expenses
-            for expense in data.get('expenses', []):
-                Expense.objects.create(
-                    category=expense['category'],
-                    amount=expense['amount'],
-                    date_spent=expense['date_spent']
-                )
+            expense_data = data.get('expenses', [])
+            expense_serializer = ExpenseSerializer(data=expense_data, many=True)
+            if expense_serializer.is_valid():
+                expense_serializer.save()
+            else:
+                return JsonResponse({'error': 'Invalid expense data', 'details': expense_serializer.errors}, status=400)
 
             # Save Incomes
-            for income in data.get('incomes', []):
-                Income.objects.create(
-                    category=income['category'],
-                    amount=income['amount'],
-                    date_received=income['date_received'],
-                    tax_amount=income.get('tax_amount', 0)  # Assuming tax_amount might be optional
-                )
+            income_data = data.get('incomes', [])
+            income_serializer = IncomeSerializer(data=income_data, many=True)
+            if income_serializer.is_valid():
+                income_serializer.save()
+            else:
+                return JsonResponse({'error': 'Invalid income data', 'details': income_serializer.errors}, status=400)
 
             # Save Investments
-            for investment in data.get('investments', []):
-                Investment.objects.create(
-                    investment_type=investment['investment_type'],
-                    initial_value=investment['initial_value'],
-                    date_invested=investment['date_invested'],
-                    current_value=investment.get('current_value', None),  # Assuming current_value might be optional
-                    symbol=investment.get('symbol', '')  # Assuming symbol might be optional
-                )
+            investment_data = data.get('investments', [])
+            investment_serializer = InvestmentSerializer(data=investment_data, many=True)
+            if investment_serializer.is_valid():
+                investment_serializer.save()
+            else:
+                return JsonResponse({'error': 'Invalid investment data', 'details': investment_serializer.errors}, status=400)
 
             request.session['data_received'] = True  # Set session variable
 
@@ -88,6 +85,34 @@ def fetch_data(request):
     else:
         return JsonResponse({'data_available': False})
 
+@api_view(['GET'])
+def fetch_detailed_data(request):
+    """
+    Fetch detailed data for expenses, incomes, or investments.
+    """
+    # Retrieve the data type from the query parameters
+    data_type = request.query_params.get('type')
+
+    if data_type == 'expenses':
+        # Fetch all expenses with more details
+        expenses = Expense.objects.all()
+        expenses_serializer = ExpenseSerializer(expenses, many=True)
+        return Response(expenses_serializer.data, status=status.HTTP_200_OK)
+
+    elif data_type == 'incomes':
+        # Fetch all incomes with more details
+        incomes = Income.objects.all()
+        incomes_serializer = IncomeSerializer(incomes, many=True)
+        return Response(incomes_serializer.data, status=status.HTTP_200_OK)
+
+    elif data_type == 'investments':
+        # Fetch all investments with more details
+        investments = Investment.objects.values()
+        investments_serializer = InvestmentSerializer(investments, many=True)
+        return Response(investments_serializer.data, status=status.HTTP_200_OK)
+
+    else:
+        return Response({'error': 'Invalid data type'}, status=status.HTTP_400_BAD_REQUEST)
 
 def generate_qr_code(request):
     # The data to encode in the QR code

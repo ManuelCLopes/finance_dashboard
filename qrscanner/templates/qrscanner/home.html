@@ -17,6 +17,14 @@
 
     <!-- Main container -->
     <div class="container py-5">
+        <div class="theme-toggle">
+            <label class="switch">
+                <input type="checkbox" id="theme-switch">
+                <span class="slider round"></span>
+            </label>
+            <span id="theme-label">Light Mode</span>
+        </div>
+        
         <!-- QR Code Section -->
         <div id="qr-code-container" class="text-center mb-5">
             <h2 class="display-4 fw-bold">Finance Dashboard</h2>
@@ -24,83 +32,105 @@
             <p class="lead">Scan this QR code to upload your financial data.</p>
         </div>
         
-        <!-- Charts Section -->
-        <div id="charts-container" style="display:none;">
-            <div class="grid-container">
-                <!-- Example Chart Card -->
-                <div class="chart-card">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header text-center">
-                            <h3 class="card-title">Expenses Breakdown</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="grid-item">
-                                <canvas id="expensesChart"></canvas>
+         <!-- Main Content Section -->
+         <div id="main-content" class="d-flex flex-wrap">
+            <!-- Selected Chart and Table Section -->
+            <div id="selected-chart-table-container" class="d-flex" style="display:none; flex-wrap: nowrap; width:100%;">
+                <!-- Placeholder for the Selected Chart -->
+                <div id="selected-chart-container" class="flex-grow-1 col-5"></div>
+                <!-- Data Table Section -->
+                <div id="data-table-container" class="col-7" style="display:none;">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr id="table-headers">
+                                <!-- Dynamically filled headers -->
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Dynamically filled data rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div id="charts-container" style="display:none;" class="flex-grow-1">
+                <div class="grid-container">
+                    <!-- Chart Cards -->
+                    <div class="chart-card" data-chart="expensesChart" data-table="expenses">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header text-center">
+                                <h3 class="card-title">Expenses Breakdown</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid-item">
+                                    <canvas id="expensesChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Expenses Distribution -->
-                <div class="chart-card">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header text-center">
-                            <h3 class="card-title">Expenses Distribution</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="grid-item">
-                                <canvas id="expensesPieChart"></canvas>
+                    <!-- Expenses Distribution -->
+                    <div class="chart-card" data-chart="expensesPieChart" data-table="expenses">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header text-center">
+                                <h3 class="card-title">Expenses Distribution</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid-item">
+                                    <canvas id="expensesPieChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Income Overview -->
-                <div class="chart-card">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header text-center">
-                            <h3 class="card-title">Income Overview</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="grid-item">
-                                <canvas id="incomesChart"></canvas>
+                    <!-- Income Overview -->
+                    <div class="chart-card" data-chart="incomesChart" data-table="incomes">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header text-center">
+                                <h3 class="card-title">Income Overview</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid-item">
+                                    <canvas id="incomesChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Income Over Time -->
-                <div class="chart-card">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header text-center">
-                            <h3 class="card-title">Income Over Time</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="grid-item">
-                                <canvas id="incomeLineChart"></canvas>
+                    <!-- Income Over Time -->
+                    <div class="chart-card" data-chart="incomeLineChart" data-table="incomes">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header text-center">
+                                <h3 class="card-title">Income Over Time</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid-item">
+                                    <canvas id="incomeLineChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Investments Breakdown -->
-                <div class="chart-card">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header text-center">
-                            <h3 class="card-title">Investments Breakdown</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="grid-item">
-                                <canvas id="investmentsChart"></canvas>
+                    <!-- Investments Breakdown -->
+                    <div class="chart-card" data-chart="investmentsChart" data-table="investments">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header text-center">
+                                <h3 class="card-title">Investments Breakdown</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid-item">
+                                    <canvas id="investmentsChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Investment Types -->
-                <div class="chart-card">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header text-center">
-                            <h3 class="card-title">Investment Types</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="grid-item">
-                                <canvas id="investmentsStackedBarChart"></canvas>
+                    <!-- Investment Types -->
+                    <div class="chart-card" data-chart="investmentsStackedBarChart" data-table="investments">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header text-center">
+                                <h3 class="card-title">Investment Types</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid-item">
+                                    <canvas id="investmentsStackedBarChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>

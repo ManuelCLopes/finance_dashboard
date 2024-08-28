@@ -1,42 +1,63 @@
-/* General styles */
-body {
-    background-color: #f4f7fa;
-    font-family: 'Roboto', sans-serif;
-    color: #333;
+:root {
+    /* Light Theme Variables */
+    --background-color: #f4f7fa;
+    --text-color: #333;
+    --card-background-color: #ffffff;
+    --card-header-background-color: #ffffff;
+    --table-background-color: #ffffff;
+    --table-text-color: #333;
+    --toggle-background-color: #ccc;
+    --toggle-handle-color: #ffffff;
+    --tooltip-background-color: #ffffff;
+    --tooltip-text-color: #333;
+    --grid-line-color: #eee;
+    --legend-text-color: #333;
+    --border-color: #ddd;
 }
 
-h2.display-4 {
-    color: #3c3f41;
-    margin-bottom: 20px;
+body[data-theme="dark"] {
+    --background-color: #1C1C1C;
+    --text-color: #F5F5DC;
+    --card-background-color: #333;
+    --card-header-background-color: #2C2C2C;
+    --table-background-color: #2C2C2C;
+    --table-text-color: #F5F5DC;
+    --toggle-background-color: #444;
+    --toggle-handle-color: #ffffff;
+    --tooltip-background-color: #333;
+    --tooltip-text-color: #F5F5DC;
+    --grid-line-color: #555;
+    --legend-text-color: #F5F5DC;
+    --border-color: #444;
+}
+
+/* Apply theme variables */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .card {
+    background-color: var(--card-background-color);
     border: none;
     border-radius: 12px;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     margin: 0 auto;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
-
 .card-header {
-    background-color: #fff;
+    background-color: var(--card-header-background-color);
     border-bottom: none;
 }
 
+.lead,
 .card-title {
-    font-weight: bold;
-    font-size: 1.5rem;
-    color: #555;
-    margin-bottom: 0;
+    color: var(--text-color);
 }
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     margin-top: 20px;
 }
@@ -50,19 +71,131 @@ h2.display-4 {
 
 canvas {
     max-width: 100%;
+    min-height: 250px;
     max-height: 300px;
     width: 100%;
     height: auto !important;
 }
 
-.lead {
-    color: #666;
-    font-size: 1.1rem;
+#selected-chart-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 100%; /* Prevents the container from exceeding the screen width */
+    padding-left: 0%;
 }
 
-/* Media queries for responsive design */
-@media (max-width: 768px) {
-    .card-title {
-        font-size: 1.25rem;
-    }
+.selected-chart-card {
+    width: 50%; /* Adjust as needed */
+    min-height: 300px; /* Set a fixed height */
+    background-color: var(--card-bg-color); /* Ensure it matches your theme */
+    border-radius: 12px;
+    overflow: hidden; /* Prevents content overflow */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.selected-card {
+    width: 100% !important; /* Ensures the card takes full width */
+    transition: width 0.3s ease-in-out; /* Smooth transition effect */
+}
+
+#charts-container {
+    width: 100%;
+}
+
+#data-table-container {
+    width: 50%; /* Adjust as needed */
+    height: 359px; /* Set a fixed height */
+    background-color: var(--card-bg-color); /* Ensure it matches your theme */
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-right: 0%;
+    overflow: auto;
+}
+
+.table-scrollable {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Styles for the table to match the theme */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+    background-color: var(--header-bg-color);
+    color: var(--header-text-color);
+}
+
+.table td {
+    color: var(--text-color);
+}
+
+/* Toggle switch styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--toggle-background-color);
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--toggle-handle-color);
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: var(--secondary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }

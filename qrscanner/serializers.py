@@ -20,10 +20,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
             'initial_value', 
             'current_value', 
             'date_invested', 
-            'investment_product', 
-            'quantity', 
-            'annual_return', 
-            'duration'
+            'investment_product',
         ]
       
    

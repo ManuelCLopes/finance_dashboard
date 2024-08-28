@@ -1,4 +1,79 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Define constants for colors
+    const COLOR_HOT_CHOCOLATE = '#592E2D';
+    const COLOR_GOLD_LEAF = '#A57C55';
+    const COLOR_TEAL = '#008080';
+    const COLOR_DARK_GREEN = '#004B3A';
+    const COLOR_BLACK_COFFEE = '#3B3029';
+    const COLOR_NAVY_BLUE = '#2C3E50';
+    const COLOR_DARK_GOLDENROD = '#B8860B';
+    const COLOR_BEIGE = '#F5F5DC';
+    const COLOR_WHITE = '#FFFFFF';
+    const COLOR_BURGUNDY = '#B00020';
+    const COLOR_PALE_WHITE = 'rgba(254, 251, 245, 1)';
+    const COLOR_TAN = '#B39B72';
+    const COLOR_DARK_GRAY = '#2C2C2C';
+    const COLOR_DIM_GRAY = '#696969';
+    const COLOR_JET_BLACK = 'rgba(14, 9, 0, 1)';
+    const COLOR_CHARCOAL = '#1C1C1C';
+
+    let charts = []; // Array to store chart instances
+
+    const themeSwitch = document.getElementById('theme-switch');
+    const themeLabel = document.getElementById('theme-label');
+
+    // Load theme preference from localStorage
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeSwitch.checked = currentTheme === 'dark';
+    themeLabel.textContent = themeSwitch.checked ? 'Dark Mode' : 'Light Mode';
+
+    // Update page elements based on the theme
+    updatePageTheme(currentTheme);
+
+    themeSwitch.addEventListener('change', function () {
+        const newTheme = themeSwitch.checked ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeLabel.textContent = themeSwitch.checked ? 'Dark Mode' : 'Light Mode';
+        updatePageTheme(newTheme); // Update page elements for the new theme
+        updateChartColors(); // Update chart colors based on the new theme
+    });
+
+    function updatePageTheme(theme) {
+        // Apply styles to non-chart elements based on the current theme
+        document.body.style.backgroundColor = theme === 'dark' ? COLOR_CHARCOAL : COLOR_BEIGE;
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
+        });
+        document.querySelectorAll('.card-header').forEach(header => {
+            header.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
+        });
+        document.querySelectorAll('.card-title, .lead').forEach(text => {
+            text.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
+        });
+        document.querySelectorAll('.table th, .table td').forEach(cell => {
+            cell.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
+            cell.style.borderColor = theme === 'dark' ? '#444' : '#ddd';
+        });
+        document.querySelectorAll('.table tr:nth-child(even)').forEach(row => {
+            row.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : '#f9f9f9';
+        });
+        document.querySelectorAll('.table').forEach(table => {
+            table.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
+        });
+    }
+
+    function updateChartColors() {
+        // Clear existing charts
+        charts.forEach(chart => chart.destroy());
+        charts = [];
+
+        // Re-fetch data and re-render charts with new theme colors
+        checkForData();
+    }
+
+    // Initialize data fetching
     checkForData();
 
     function checkForData() {
@@ -9,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('qr-code-container').style.display = 'none';
                     document.getElementById('charts-container').style.display = 'block';
                     renderCharts(data);
+                    enableCardClick(data);
                 } else {
                     setTimeout(checkForData, 5000);
                 }
@@ -17,17 +93,54 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderCharts(data) {
-        drawChart('expensesChart', 'bar', data.expenses, 'Expenses', '#FF6384', '#FF6384');
-        drawChart('incomesChart', 'bar', data.incomes, 'Incomes', '#36A2EB', '#36A2EB');
-        drawChart('investmentsChart', 'bar', data.investments, 'Investments', '#4BC0C0', '#4BC0C0');
-        drawPieChart('expensesPieChart', data.expenses, 'Expenses Distribution');
-        drawLineChart('incomeLineChart', data.incomes, 'Income Over Time');
-        drawStackedBarChart('investmentsStackedBarChart', data.investments);
+        // Get the theme-specific colors
+        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+        const colors = getThemeColors(theme);
+
+        // Expenses Chart
+        charts.push(drawChart('expensesChart', 'bar', data.expenses, 'Expenses', colors.expense, colors.expense));
+
+        // Incomes Chart
+        charts.push(drawChart('incomesChart', 'bar', data.incomes, 'Incomes', colors.income, colors.income));
+
+        // Investments Chart
+        charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
+
+        // Expenses Pie Chart
+        charts.push(drawPieChart('expensesPieChart', data.expenses, 'Expenses Distribution', [colors.expense, colors.income]));
+
+        // Income Line Chart
+        charts.push(drawLineChart('incomeLineChart', data.incomes, 'Income Over Time', colors.line));
+
+        // Investments Stacked Bar Chart
+        charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
+    }
+
+    function getThemeColors(theme) {
+        if (theme === 'dark') {
+            return {
+                expense: COLOR_HOT_CHOCOLATE,
+                income: COLOR_GOLD_LEAF,
+                investment: COLOR_TEAL,
+                line: COLOR_DARK_GREEN,
+                investmentType1: COLOR_TAN,
+                investmentType2: COLOR_DARK_GRAY
+            };
+        } else {
+            return {
+                expense: COLOR_NAVY_BLUE,
+                income: COLOR_DARK_GOLDENROD,
+                investment: COLOR_TEAL,
+                line: COLOR_DARK_GREEN,
+                investmentType1: COLOR_GOLD_LEAF,
+                investmentType2: COLOR_BEIGE
+            };
+        }
     }
 
     function drawChart(canvasId, chartType, chartData, label, bgColor, borderColor) {
         const ctx = document.getElementById(canvasId).getContext('2d');
-        new Chart(ctx, {
+        return new Chart(ctx, {
             type: chartType,
             data: {
                 labels: chartData.labels,
@@ -45,24 +158,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function drawPieChart(canvasId, chartData, label) {
+    function drawPieChart(canvasId, chartData, label, colors) {
         const ctx = document.getElementById(canvasId).getContext('2d');
-        new Chart(ctx, {
+        return new Chart(ctx, {
             type: 'pie',
             data: {
                 labels: chartData.labels,
                 datasets: [{
                     label: label,
                     data: chartData.values,
-                    backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
-                    ],
-                    hoverBackgroundColor: [
-                        lightenColor('#FF6384', 20),
-                        lightenColor('#36A2EB', 20),
-                        lightenColor('#FFCE56', 20),
-                        lightenColor('#4BC0C0', 20)
-                    ],
+                    backgroundColor: colors,
+                    hoverBackgroundColor: colors.map(color => lightenColor(color, 20)),
                     borderWidth: 2
                 }]
             },
@@ -70,9 +176,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function drawLineChart(canvasId, chartData, label) {
+    function drawLineChart(canvasId, chartData, label, borderColor) {
         const ctx = document.getElementById(canvasId).getContext('2d');
-        new Chart(ctx, {
+        return new Chart(ctx, {
             type: 'line',
             data: {
                 labels: chartData.labels,
@@ -80,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: label,
                     data: chartData.values,
                     fill: false,
-                    borderColor: '#36A2EB',
+                    borderColor: borderColor,
                     borderWidth: 2,
                     tension: 0.4
                 }]
@@ -89,23 +195,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function drawStackedBarChart(canvasId, chartData) {
+    function drawStackedBarChart(canvasId, chartData, colors) {
         const ctx = document.getElementById(canvasId).getContext('2d');
-        new Chart(ctx, {
+        return new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: chartData.labels,
                 datasets: [{
                     label: 'Investment Type 1',
                     data: chartData.values,
-                    backgroundColor: '#4BC0C0',
-                    borderColor: '#4BC0C0',
+                    backgroundColor: colors[0],
+                    borderColor: colors[0],
                     borderWidth: 2
                 }, {
                     label: 'Investment Type 2',
                     data: chartData.values.map(value => value / 2),
-                    backgroundColor: '#FFCE56',
-                    borderColor: '#FFCE56',
+                    backgroundColor: colors[1],
+                    borderColor: colors[1],
                     borderWidth: 2
                 }]
             },
@@ -123,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getChartOptions() {
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
         return {
             responsive: true,
             maintainAspectRatio: false,
@@ -136,14 +243,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: '#333'
+                        color: isDarkMode ? COLOR_BEIGE : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: '#fff',
-                    titleColor: '#333',
-                    bodyColor: '#666',
+                    backgroundColor: isDarkMode ? '#333' : '#fff',
+                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
+                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
@@ -152,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         size: 12
                     },
                     borderWidth: 1,
-                    borderColor: '#ddd'
+                    borderColor: isDarkMode ? '#444' : '#ddd'
                 }
             },
             scales: {
@@ -164,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: '#eee'
+                        color: isDarkMode ? '#555' : '#eee'
                     }
                 }
             },
@@ -184,6 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getPieChartOptions() {
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
         return {
             responsive: true,
             plugins: {
@@ -196,14 +304,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: '#333'
+                        color: isDarkMode ? COLOR_BEIGE : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: '#fff',
-                    titleColor: '#333',
-                    bodyColor: '#666',
+                    backgroundColor: isDarkMode ? '#333' : '#fff',
+                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
+                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
@@ -212,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         size: 12
                     },
                     borderWidth: 1,
-                    borderColor: '#ddd'
+                    borderColor: isDarkMode ? '#444' : '#ddd'
                 }
             },
             animation: {
@@ -223,6 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getLineChartOptions() {
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
         return {
             responsive: true,
             plugins: {
@@ -235,14 +344,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: '#333'
+                        color: isDarkMode ? COLOR_BEIGE : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: '#fff',
-                    titleColor: '#333',
-                    bodyColor: '#666',
+                    backgroundColor: isDarkMode ? '#333' : '#fff',
+                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
+                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
@@ -251,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         size: 12
                     },
                     borderWidth: 1,
-                    borderColor: '#ddd'
+                    borderColor: isDarkMode ? '#444' : '#ddd'
                 }
             },
             animation: {
@@ -262,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: '#eee'
+                        color: isDarkMode ? '#555' : '#eee'
                     }
                 }
             },
@@ -278,8 +387,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getStackedBarChartOptions() {
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
         return {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: true,
@@ -290,14 +401,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: '#333'
+                        color: isDarkMode ? COLOR_BEIGE : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: '#fff',
-                    titleColor: '#333',
-                    bodyColor: '#666',
+                    backgroundColor: isDarkMode ? '#333' : '#fff',
+                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
+                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
@@ -306,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         size: 12
                     },
                     borderWidth: 1,
-                    borderColor: '#ddd'
+                    borderColor: isDarkMode ? '#444' : '#ddd'
                 }
             },
             scales: {
@@ -326,5 +437,140 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         };
+    }
+
+    function enableCardClick() {
+        const cards = document.querySelectorAll('.chart-card');
+        console.log('Chart cards found:', cards.length);
+    
+        let previouslySelectedCard = null;
+    
+        cards.forEach(card => {
+            card.addEventListener('click', function () {
+                console.log('Card clicked:', card);
+    
+                const selectedChartContainer = document.getElementById('selected-chart-container');
+                if (!selectedChartContainer) {
+                    console.error('Selected chart container not found!');
+                    return;
+                }
+    
+                // If the same card is clicked again, reset the layout
+                if (previouslySelectedCard === card) {
+                    resetLayout();
+                    previouslySelectedCard = null;
+                    return;
+                }
+    
+                // If there was a previously selected card, reset its style
+                if (previouslySelectedCard) {
+                    previouslySelectedCard.classList.remove('selected-card');
+                    document.querySelector('.grid-container').appendChild(previouslySelectedCard);
+                }
+    
+                // Add the selected card to the selected chart container
+                selectedChartContainer.appendChild(card);
+                card.classList.add('selected-card');  // Add class to make the card full width
+                previouslySelectedCard = card;
+    
+                document.getElementById('selected-chart-table-container').style.display = 'flex';
+                document.getElementById('data-table-container').style.display = 'block';
+    
+                fetchDetailedData(card.dataset.table);
+                adjustGridLayout(card);
+            });
+        });
+    }
+    
+    function resetLayout() {
+        const selectedChartContainer = document.getElementById('selected-chart-container');
+        const gridContainer = document.querySelector('.grid-container');
+        if (selectedChartContainer.children.length > 0) {
+            const selectedCard = selectedChartContainer.children[0];
+            selectedCard.classList.remove('selected-card');  // Remove class when resetting
+            gridContainer.appendChild(selectedCard);
+        }
+    
+        document.getElementById('selected-chart-table-container').style.display = 'none';
+        document.getElementById('data-table-container').style.display = 'none';
+        gridContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    }
+
+    function fetchDetailedData(tableType) {
+        fetch(`/fetch_detailed_data/?type=${tableType}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Detailed data fetched:', data);
+                populateTable(data);
+            })
+            .catch(error => console.error('Error fetching detailed data:', error));
+    }
+
+    function adjustGridLayout(selectedCard) {
+        const gridContainer = document.querySelector('.grid-container');
+        const chartCards = document.querySelectorAll('.chart-card');
+
+        chartCards.forEach(card => {
+            if (card !== selectedCard) {
+                gridContainer.appendChild(card);
+            }
+        });
+
+        gridContainer.style.display = 'grid';
+        gridContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    }
+
+    function populateTable(tableData) {
+        const tableHeaders = document.getElementById('table-headers');
+        const tableBody = document.getElementById('table-body');
+
+        tableHeaders.innerHTML = '';
+        tableBody.innerHTML = '';
+
+        console.log('Populating table with data:', tableData);
+
+        if (!Array.isArray(tableData) || tableData.length === 0) {
+            console.log('No data available for table');
+            const noDataRow = document.createElement('tr');
+            const noDataCell = document.createElement('td');
+            noDataCell.textContent = 'No data available';
+            noDataCell.colSpan = '100%';
+            noDataRow.appendChild(noDataCell);
+            tableBody.appendChild(noDataRow);
+            return;
+        }
+
+        const columnMapping = {
+            'symbol': 'Symbol',
+            'investment_type': 'Type',
+            'initial_value': 'Initial Value',
+            'current_value': 'Current Value',
+            'date_invested': 'Date',
+            'investment_product': 'Product',
+            'category': 'Category',
+            'amount': 'Amount',
+            'date_spent': 'Date',
+            'date_received': 'Date',
+            'tax_amount': 'Tax applied'
+        };
+
+        const headers = Object.keys(tableData[0] || {});
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = columnMapping[header] || header;
+            tableHeaders.appendChild(th);
+        });
+
+        tableData.forEach(row => {
+            const tr = document.createElement('tr');
+            headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = row[header] !== undefined ? row[header] : '';
+                tr.appendChild(td);
+            });
+            tableBody.appendChild(tr);
+        });
+
+        console.log('Table populated with data:', tableData);
     }
 });
