@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const COLOR_BLACK_COFFEE = '#3B3029';
     const COLOR_NAVY_BLUE = '#2C3E50';
     const COLOR_DARK_GOLDENROD = '#B8860B';
-    const COLOR_BEIGE = '#F5F5DC';
+    const COLOR_ALABASTER = '#FAFAFA';
     const COLOR_WHITE = '#FFFFFF';
     const COLOR_BURGUNDY = '#B00020';
     const COLOR_PALE_WHITE = 'rgba(254, 251, 245, 1)';
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updatePageTheme(theme) {
         // Apply styles to non-chart elements based on the current theme
-        document.body.style.backgroundColor = theme === 'dark' ? COLOR_CHARCOAL : COLOR_BEIGE;
+        document.body.style.backgroundColor = theme === 'dark' ? COLOR_CHARCOAL : COLOR_ALABASTER;
         document.querySelectorAll('.card').forEach(card => {
             card.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
         });
@@ -59,24 +59,24 @@ document.addEventListener('DOMContentLoaded', function () {
             header.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
         });
         document.querySelectorAll('.card-title, .lead').forEach(text => {
-            text.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
+            text.style.color = theme === 'dark' ? COLOR_ALABASTER : '#333';
         });
 
         // Update table styles dynamically
         document.querySelectorAll('#data-table-container').forEach(container => {
             container.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
-            container.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
+            container.style.color = theme === 'dark' ? COLOR_ALABASTER : '#333';
         });
         document.querySelectorAll('#table-container').forEach(container => {
             container.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
-            container.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
+            container.style.color = theme === 'dark' ? COLOR_ALABASTER : '#333';
         });
         document.querySelectorAll('.table').forEach(table => {
             table.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
         });
         document.querySelectorAll('.table th, .table td').forEach(cell => {
             cell.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
-            cell.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
+            cell.style.color = theme === 'dark' ? COLOR_ALABASTER : '#333';
         });
         document.querySelectorAll('.table tr:nth-child(even)').forEach(row => {
             row.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_LIGHT_GRAY;
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 investment: COLOR_TEAL,
                 line: COLOR_DARK_GREEN,
                 investmentType1: COLOR_GOLD_LEAF,
-                investmentType2: COLOR_BEIGE
+                investmentType2: COLOR_ALABASTER
             };
         }
     }
@@ -263,14 +263,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: isDarkMode ? COLOR_BEIGE : '#333'
+                        color: isDarkMode ? COLOR_ALABASTER : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
                     backgroundColor: isDarkMode ? '#333' : '#fff',
-                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
-                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
+                    titleColor: isDarkMode ? COLOR_ALABASTER : '#333',
+                    bodyColor: isDarkMode ? COLOR_ALABASTER : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
@@ -324,14 +324,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: isDarkMode ? COLOR_BEIGE : '#333'
+                        color: isDarkMode ? COLOR_ALABASTER : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
                     backgroundColor: isDarkMode ? '#333' : '#fff',
-                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
-                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
+                    titleColor: isDarkMode ? COLOR_ALABASTER : '#333',
+                    bodyColor: isDarkMode ? COLOR_ALABASTER : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
@@ -364,14 +364,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: isDarkMode ? COLOR_BEIGE : '#333'
+                        color: isDarkMode ? COLOR_ALABASTER : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
                     backgroundColor: isDarkMode ? '#333' : '#fff',
-                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
-                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
+                    titleColor: isDarkMode ? COLOR_ALABASTER : '#333',
+                    bodyColor: isDarkMode ? COLOR_ALABASTER : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
@@ -421,14 +421,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             family: 'Roboto',
                             style: 'bold'
                         },
-                        color: isDarkMode ? COLOR_BEIGE : '#333'
+                        color: isDarkMode ? COLOR_ALABASTER : '#333'
                     }
                 },
                 tooltip: {
                     enabled: true,
                     backgroundColor: isDarkMode ? '#333' : '#fff',
-                    titleColor: isDarkMode ? COLOR_BEIGE : '#333',
-                    bodyColor: isDarkMode ? COLOR_BEIGE : '#666',
+                    titleColor: isDarkMode ? COLOR_ALABASTER : '#333',
+                    bodyColor: isDarkMode ? COLOR_ALABASTER : '#666',
                     titleFont: {
                         size: 14,
                         weight: 'bold'
