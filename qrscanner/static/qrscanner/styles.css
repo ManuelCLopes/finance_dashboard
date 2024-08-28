@@ -13,6 +13,8 @@
     --grid-line-color: #eee;
     --legend-text-color: #333;
     --border-color: #ddd;
+    --toggle-icon-sun-color: #f39c12; /* Sun icon color */
+    --toggle-icon-moon-color: #34495e; /* Moon icon color */
 }
 
 body[data-theme="dark"] {
@@ -29,6 +31,8 @@ body[data-theme="dark"] {
     --grid-line-color: #555;
     --legend-text-color: #F5F5DC;
     --border-color: #444;
+    --toggle-icon-sun-color: #888; /* Sun icon color in dark mode */
+    --toggle-icon-moon-color: #F5F5DC; /* Moon icon color in dark mode */
 }
 
 /* Apply theme variables */
@@ -37,24 +41,76 @@ body {
     color: var(--text-color);
 }
 
-.card {
+.content {
+    padding-top: 0!important;
+}
+
+.card, .table, #data-table-container, #table-container {
+    
     background-color: var(--card-background-color);
+    color: var(--text-color);
     border: none;
     border-radius: 12px;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     margin: 0 auto;
 }
 
+#data-table-container {
+    height: 359px;
+    overflow: auto; /* Enables vertical scrolling */
+}
+
+/* Hide scrollbar while maintaining scroll functionality for WebKit browsers (Chrome, Safari) */
+#data-table-container::-webkit-scrollbar {
+    width: 0; /* Remove scrollbar space */
+    height: 0; /* Remove scrollbar space */
+}
+
+/* Hide scrollbar for Firefox */
+#data-table-container {
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Hide scrollbar for Internet Explorer and Edge */
+#data-table-container {
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
 .card-header {
     background-color: var(--card-header-background-color);
-    border-bottom: none;
 }
 
-.lead,
-.card-title {
-    color: var(--text-color);
+.table {
+    width: 100%;
+    border-collapse: collapse; /* Ensure there are no gaps between table cells */
+    border: none; /* Removes border from the table itself */
 }
 
+.table th, .table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: none; /* Remove bottom border */
+    border: none; /* Remove any border from table cells */
+}
+
+/* Even rows for the table without borders */
+.table tr:nth-child(even) {
+    border: none; /* Ensure no borders on even rows */
+}
+
+/* Hover effect for better visibility without borders */
+.table tr:hover {
+    border: none; /* Ensure no borders on hover */
+}
+
+.table-scrollable {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+    padding: 10px;
+    box-sizing: border-box;
+}
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -88,7 +144,7 @@ canvas {
 .selected-chart-card {
     width: 50%; /* Adjust as needed */
     min-height: 300px; /* Set a fixed height */
-    background-color: var(--card-bg-color); /* Ensure it matches your theme */
+    background-color: var(--card-background-color); /* Ensure it matches your theme */
     border-radius: 12px;
     overflow: hidden; /* Prevents content overflow */
     display: flex;
@@ -105,55 +161,12 @@ canvas {
     width: 100%;
 }
 
-#data-table-container {
-    width: 50%; /* Adjust as needed */
-    height: 359px; /* Set a fixed height */
-    background-color: var(--card-bg-color); /* Ensure it matches your theme */
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding-right: 0%;
-    overflow: auto;
-}
-
-.table-scrollable {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto; /* Enables vertical scrolling */
-    overflow-x: hidden; /* Prevents horizontal scrolling */
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-/* Styles for the table to match the theme */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table th, .table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.table th {
-    background-color: var(--header-bg-color);
-    color: var(--header-text-color);
-}
-
-.table td {
-    color: var(--text-color);
-}
-
 /* Toggle switch styles */
 .switch {
     position: relative;
     display: inline-block;
     width: 60px;
-    height: 34px;
+    height: 30px;
 }
 
 .switch input {
@@ -162,15 +175,43 @@ canvas {
     height: 0;
 }
 
+.theme-toggle {
+    display: flex; /* Use flexbox layout */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    margin: 20px 0; /* Add some margin for spacing */
+}
+
 .slider {
-    position: absolute;
-    cursor: pointer;
+    display: flex; 
+    align-items: center;    cursor: pointer;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: var(--toggle-background-color);
     transition: 0.4s;
+    border-radius: 34px;
+}
+
+/* Sun and Moon icons inside the toggle switch */
+.slider .fa-sun, .slider .fa-moon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    transition: opacity 0.4s;
+}
+
+.slider .fa-sun {
+    left: 10px;
+    color: var(--toggle-icon-sun-color);
+}
+
+.slider .fa-moon {
+    right: 10px;
+    color: var(--toggle-icon-moon-color);
+    opacity: 0; /* Initially hidden */
 }
 
 .slider:before {
@@ -178,24 +219,26 @@ canvas {
     content: "";
     height: 26px;
     width: 26px;
-    left: 4px;
-    bottom: 4px;
+    left: 2px;
+    bottom: 2px;
     background-color: var(--toggle-handle-color);
     transition: 0.4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: var(--secondary-color);
+    background-color: var(--toggle-background-color);
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(30px);
 }
 
-.slider.round {
-    border-radius: 34px;
+input:checked + .slider .fa-sun {
+    opacity: 0; /* Hide sun icon when dark mode is enabled */
 }
 
-.slider.round:before {
-    border-radius: 50%;
+input:checked + .slider .fa-moon {
+    opacity: 1; /* Show moon icon when dark mode is enabled */
 }
+

@@ -20,25 +20,34 @@ document.addEventListener('DOMContentLoaded', function () {
     let charts = []; // Array to store chart instances
 
     const themeSwitch = document.getElementById('theme-switch');
-    const themeLabel = document.getElementById('theme-label');
+    const sunIcon = document.querySelector('.slider .fa-sun');
+    const moonIcon = document.querySelector('.slider .fa-moon');
 
     // Load theme preference from localStorage
     const currentTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeSwitch.checked = currentTheme === 'dark';
-    themeLabel.textContent = themeSwitch.checked ? 'Dark Mode' : 'Light Mode';
-
-    // Update page elements based on the theme
+    updateToggleIcons(currentTheme);
     updatePageTheme(currentTheme);
 
     themeSwitch.addEventListener('change', function () {
         const newTheme = themeSwitch.checked ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
-        themeLabel.textContent = themeSwitch.checked ? 'Dark Mode' : 'Light Mode';
+        updateToggleIcons(newTheme); // Update icons when theme changes
         updatePageTheme(newTheme); // Update page elements for the new theme
         updateChartColors(); // Update chart colors based on the new theme
     });
+
+    function updateToggleIcons(theme) {
+        if (theme === 'dark') {
+            sunIcon.style.opacity = '0';
+            moonIcon.style.opacity = '1';
+        } else {
+            sunIcon.style.opacity = '1';
+            moonIcon.style.opacity = '0';
+        }
+    }
 
     function updatePageTheme(theme) {
         // Apply styles to non-chart elements based on the current theme
@@ -52,16 +61,27 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.card-title, .lead').forEach(text => {
             text.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
         });
-        document.querySelectorAll('.table th, .table td').forEach(cell => {
-            cell.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
-            cell.style.borderColor = theme === 'dark' ? '#444' : '#ddd';
+
+        // Update table styles dynamically
+        document.querySelectorAll('#data-table-container').forEach(container => {
+            container.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
+            container.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
         });
-        document.querySelectorAll('.table tr:nth-child(even)').forEach(row => {
-            row.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : '#f9f9f9';
+        document.querySelectorAll('#table-container').forEach(container => {
+            container.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
+            container.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
         });
         document.querySelectorAll('.table').forEach(table => {
             table.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
         });
+        document.querySelectorAll('.table th, .table td').forEach(cell => {
+            cell.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_WHITE;
+            cell.style.color = theme === 'dark' ? COLOR_BEIGE : '#333';
+        });
+        document.querySelectorAll('.table tr:nth-child(even)').forEach(row => {
+            row.style.backgroundColor = theme === 'dark' ? COLOR_DARK_GRAY : COLOR_LIGHT_GRAY;
+        });
+        
     }
 
     function updateChartColors() {
@@ -475,7 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
                 document.getElementById('selected-chart-table-container').style.display = 'flex';
                 document.getElementById('data-table-container').style.display = 'block';
-    
+                
                 fetchDetailedData(card.dataset.table);
                 adjustGridLayout(card);
             });
