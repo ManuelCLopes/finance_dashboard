@@ -1,1 +1,1 @@
-web: gunicorn finance-tracker.wsgi --log-file -
+web: gunicorn finance_dashboard.wsgi --log-file -
