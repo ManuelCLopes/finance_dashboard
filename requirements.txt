@@ -6,3 +6,4 @@ pypng==0.20220715.0
 qrcode==7.4.2
 sqlparse==0.5.1
 typing_extensions==4.12.2
+whitenoise==6.7.0
