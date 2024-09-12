@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Privacy Policy</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'qrscanner/styles.css' %}">
+    <!-- Adiciona Font Awesome para os ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Inline script to set initial theme -->
+    <script>
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+    </script>
+</head>
+<body>
+    <!-- Main container -->
+    <div class="privacy-container">
+        <!-- Top Bar for Theme Toggle and Back to Home -->
+        <div class="top-bar">
+            <!-- Back to Home Icon -->
+            <a href="{% url 'home' %}" class="back-icon">
+                <i class="fas fa-arrow-left"></i> <!-- Ícone para voltar à página inicial -->
+            </a>
+            
+            <!-- Theme Toggle Switch -->
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider">
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Privacy Card -->
+        <div class="privacy-card">
+            <div class="privacy-card-header">Privacy Policy</div>
+            <div class="privacy-content">
+                <h1 class="privacy-title">Welcome to Our Privacy Policy</h1>
+                <p class="privacy-paragraph">Your privacy is critically important to us. This policy outlines how we collect, use, and protect your personal information when you use our services.</p>
+
+                <h2 class="privacy-subtitle">Information We Collect</h2>
+                <p class="privacy-paragraph">We collect various types of information in connection with the services we provide, including:</p>
+                <ul class="privacy-list">
+                    <li><strong>Usage Data:</strong> Information about how you interact with our services, such as page views and clicks.</li>
+                    <li><strong>Device Data:</strong> Information about the device you are using, including hardware model and IP address.</li>
+                    <li><strong>Camera Access:</strong> The app requests access to your camera strictly to scan QR codes. No personal data or images are saved or transmitted through the use of the camera.</li>
+                </ul>
+
+                <h2 class="privacy-subtitle">How We Use Your Information</h2>
+                <p class="privacy-paragraph">We use the information we collect in the following ways:</p>
+                <ul class="privacy-list">
+                    <li>To provide and improve our services</li>
+                    <li>To communicate with you regarding updates and promotions</li>
+                    <li>To ensure the security of our platform</li>
+                    <li>To scan and send QR code data to the web dashboard. No personal information is stored.</li>
+                </ul>
+
+                <h2 class="privacy-subtitle">Your Data Protection Rights</h2>
+                <p class="privacy-paragraph">You have the right to access, modify, or delete your personal data. Please contact us if you wish to exercise these rights.</p>
+
+                <h2 class="privacy-subtitle">Changes to This Policy</h2>
+                <p class="privacy-paragraph">We may update our privacy policy from time to time. We encourage you to review this policy periodically for any changes.</p>
+
+                <p class="privacy-paragraph">If you have any questions, please <a href="mailto:manuel_clopes@outlook.com" class="privacy-link">contact us</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle theme switching -->
+    <script src="{% static 'qrscanner/charts.js' %}"></script>
+</body>
+</html>

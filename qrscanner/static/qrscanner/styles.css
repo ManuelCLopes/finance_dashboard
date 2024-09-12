@@ -15,9 +15,11 @@
     --border-color: #ddd;
     --toggle-icon-sun-color: #f39c12; /* Sun icon color */
     --toggle-icon-moon-color: #34495e; /* Moon icon color */
+    --link-color: #007bff;
 }
 
 body[data-theme="dark"] {
+    /* Dark Theme Variables */
     --background-color: #1C1C1C;
     --text-color: #FAFAFA;
     --card-background-color: #333;
@@ -33,6 +35,7 @@ body[data-theme="dark"] {
     --border-color: #444;
     --toggle-icon-sun-color: #888; /* Sun icon color in dark mode */
     --toggle-icon-moon-color: #FAFAFA; /* Moon icon color in dark mode */
+    --link-color: #FAFAFA;
 }
 
 /* Apply theme variables */
@@ -46,7 +49,6 @@ body {
 }
 
 .card, .table, #data-table-container, #table-container {
-    
     background-color: var(--card-background-color);
     color: var(--text-color);
     border: none;
@@ -111,6 +113,7 @@ body {
     padding: 10px;
     box-sizing: border-box;
 }
+
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -184,7 +187,8 @@ canvas {
 
 .slider {
     display: flex; 
-    align-items: center;    cursor: pointer;
+    align-items: center;
+    cursor: pointer;
     top: 0;
     left: 0;
     right: 0;
@@ -242,3 +246,87 @@ input:checked + .slider .fa-moon {
     opacity: 1; /* Show moon icon when dark mode is enabled */
 }
 
+/* Privacy Policy Container */
+.privacy-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.privacy-card {
+    background-color: var(--card-background-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.privacy-card-header {
+    background-color: var(--card-header-background-color);
+    padding: 10px 20px;
+    border-radius: 12px 12px 0 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.privacy-content {
+    padding: 20px;
+}
+
+.privacy-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.privacy-subtitle {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.privacy-paragraph {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.privacy-list {
+    margin: 10px 0 20px 20px;
+    color: var(--text-color);
+}
+
+.privacy-list li {
+    margin-bottom: 10px;
+}
+
+.privacy-link {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.privacy-link:hover {
+    text-decoration: underline;
+}
+
+/* Style for the top bar */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-icon {
+    font-size: 24px;
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.back-icon:hover {
+    color: var(--link-color);
+}

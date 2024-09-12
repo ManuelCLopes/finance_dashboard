@@ -20,3 +20,6 @@ def check_data_status(request):
     # Check if data has been received
     data_received = request.session.get('data_received', False)
     return JsonResponse({'data_received': data_received})
+
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')

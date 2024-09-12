@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updatePageTheme(theme) {
+
+        document.documentElement.setAttribute('data-theme', theme);
+
         // Apply styles to non-chart elements based on the current theme
         document.body.style.backgroundColor = theme === 'dark' ? COLOR_CHARCOAL : COLOR_ALABASTER;
         document.querySelectorAll('.card').forEach(card => {
