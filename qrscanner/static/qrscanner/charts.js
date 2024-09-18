@@ -147,33 +147,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function aggregateDataByMonth(data) {
         console.log('Raw income data:', data);
-        if (typeof data !== 'object' || !Array.isArray(data.labels) || !Array.isArray(data.values)) {
+        if (!Array.isArray(data)) {
             console.error('Data format is incorrect:', data);
             return { labels: [], values: [] };
         }
 
         const monthlyData = {};
-        const labels = data.labels;
-        const values = data.values.map(value => parseFloat(value));
 
-        labels.forEach((label, index) => {
-            console.log('Processing label:', label);
-            // Assuming the label contains the date in a format like "Category YYYY-MM-DD"
-            const dateMatch = label.match(/\d{4}-\d{2}-\d{2}/);
-            if (dateMatch) {
-                const fullDate = dateMatch[0];
-                const [year, month] = fullDate.split('-');
-                const monthKey = `${year}-${month}`;
+        data.forEach(item => {
+            const date = new Date(item.date_received);
+            const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+            const amount = parseFloat(item.amount);
 
-                if (!monthlyData[monthKey]) {
-                    monthlyData[monthKey] = 0;
-                }
-
-                monthlyData[monthKey] += values[index];
-                console.log(`Added ${values[index]} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
-            } else {
-                console.warn('No date found in label:', label);
+            if (!monthlyData[monthKey]) {
+                monthlyData[monthKey] = 0;
             }
+
+            monthlyData[monthKey] += amount;
+            console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
         });
 
         console.log('Final monthly data:', monthlyData);
@@ -340,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
         canvas.height = 400;  // Set your desired height
         canvas.width = canvas.parentElement.offsetWidth;  // Match the parent's width if desired
     
-        const chart = new Chart(ctx, {
+        return new Chart(ctx, {
             type: 'line',
             data: {
                 labels: chartData.labels,
@@ -353,11 +344,32 @@ document.addEventListener('DOMContentLoaded', function () {
                     tension: 0.4
                 }]
             },
-            options: getLineChartOptions()
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'month',
+                            displayFormats: {
+                                month: 'MMM YYYY'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Amount'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
         });
-
-        console.log('Chart instance:', chart);
-        return chart;
     }
     
 
