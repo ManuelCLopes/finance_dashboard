@@ -125,11 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (aggregatedIncomeData.labels.length === 0 || aggregatedIncomeData.values.length === 0) {
             console.error('No income data to display');
-            // Display a message to the user
-            const incomeChartElement = document.getElementById('incomeLineChart');
-            if (incomeChartElement) {
-                incomeChartElement.innerHTML = '<p>No income data available to display.</p>';
-            }
+            // You might want to display a message to the user here
         } else {
             charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
         }
@@ -153,11 +149,13 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Raw income data:', data);
         let incomeData = [];
 
-        if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
+        if (Array.isArray(data)) {
+            incomeData = data;
+        } else if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
             incomeData = data.labels.map((label, index) => ({
                 category: label,
                 amount: data.values[index],
-                date_received: data.values[index].match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Extract date from values array
+                date_received: label.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Default date if not found
             }));
         } else {
             console.error('Data format is incorrect:', data);
@@ -171,15 +169,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item.amount);
 
-            if (!isNaN(amount)) {
-                if (!monthlyData[monthKey]) {
-                    monthlyData[monthKey] = 0;
-                }
-                monthlyData[monthKey] += amount;
-                console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
-            } else {
-                console.warn(`Invalid amount for ${item.category}: ${item.amount}`);
+            if (!monthlyData[monthKey]) {
+                monthlyData[monthKey] = 0;
             }
+
+            monthlyData[monthKey] += amount;
+            console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
         });
 
         console.log('Final monthly data:', monthlyData);
@@ -363,13 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 responsive: true,
                 scales: {
                     x: {
-                        type: 'time',
-                        time: {
-                            unit: 'month',
-                            displayFormats: {
-                                month: 'MMM YYYY'
-                            }
-                        },
+                        type: 'category',
                         title: {
                             display: true,
                             text: 'Date'
