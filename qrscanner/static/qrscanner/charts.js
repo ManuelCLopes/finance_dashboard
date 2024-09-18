@@ -127,8 +127,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
         console.log('Aggregated Expenses:', aggregatedExpenses); // Log aggregated data for debugging
     
+        // Aggregate and filter incomes, excluding categories ending with a year
+        const aggregatedIncomes = aggregateDataByCategory(data.incomes, true);
+        console.log('Aggregated Incomes:', aggregatedIncomes); // Log aggregated data for debugging
+    
         charts.push(drawChart('expensesChart', 'bar', aggregatedExpenses, 'Expenses by Category', colors.expense, colors.expense));
-        charts.push(drawChart('incomesChart', 'bar', data.incomes, 'Incomes', colors.income, colors.income));
+        charts.push(drawChart('incomesChart', 'bar', aggregatedIncomes, 'Incomes', colors.income, colors.income));
         charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
         charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', EXPENSE_COLORS));
         charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
@@ -173,6 +177,39 @@ document.addEventListener('DOMContentLoaded', function () {
         const categoryTotals = {};
         expenses.labels.forEach((label, index) => {
             const value = parseFloat(expenses.values[index]);
+            if (!isNaN(value)) {
+                if (categoryTotals[label]) {
+                    categoryTotals[label] += value;
+                } else {
+                    categoryTotals[label] = value;
+                }
+            }
+        });
+
+        // Sort categories by value in descending order
+        const sortedCategories = Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1]);
+
+        return {
+            labels: sortedCategories.map(item => item[0]),
+            values: sortedCategories.map(item => item[1])
+        };
+    }
+    
+    function aggregateDataByCategory(data, excludeYearPattern = false) {
+        if (!data || !data.labels || !data.values) {
+            console.error('Invalid data:', data);
+            return { labels: [], values: [] };
+        }
+
+        const categoryTotals = {};
+        data.labels.forEach((label, index) => {
+            // Exclude categories ending with a year pattern (e.g., "xxx 2024")
+            if (excludeYearPattern && /\s\d{4}$/.test(label)) {
+                return;
+            }
+
+            const value = parseFloat(data.values[index]);
             if (!isNaN(value)) {
                 if (categoryTotals[label]) {
                     categoryTotals[label] += value;
