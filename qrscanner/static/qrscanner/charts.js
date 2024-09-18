@@ -121,14 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Aggregate the income data by month for the line chart
         const aggregatedIncomeData = aggregateDataByMonth(data.incomes);
-        console.log('Aggregated Income Data:', aggregatedIncomeData);
-
-        if (aggregatedIncomeData.labels.length === 0 || aggregatedIncomeData.values.length === 0) {
-            console.error('No income data to display');
-            // You might want to display a message to the user here
-        } else {
-            charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
-        }
+        console.log('Aggregated Income Data:', aggregatedIncomeData); // Log aggregated data for debugging
     
         // Aggregate expenses by category
         const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
@@ -142,49 +135,36 @@ document.addEventListener('DOMContentLoaded', function () {
         charts.push(drawChart('incomesChart', 'bar', aggregatedIncomes, 'Incomes', colors.income, colors.income));
         charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
         charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', EXPENSE_COLORS));
+        charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
         charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
     }
 
     function aggregateDataByMonth(data) {
-        console.log('Raw income data:', data);
-        let incomeData = [];
-
-        if (Array.isArray(data)) {
-            incomeData = data;
-        } else if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
-            incomeData = data.labels.map((label, index) => ({
-                category: label,
-                amount: data.values[index],
-                date_received: label.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Default date if not found
-            }));
-        } else {
+        if (typeof data !== 'object' || !Array.isArray(data.labels) || !Array.isArray(data.values)) {
             console.error('Data format is incorrect:', data);
             return { labels: [], values: [] };
         }
-
+    
         const monthlyData = {};
-
-        incomeData.forEach(item => {
-            const date = new Date(item.date_received);
-            const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-            const amount = parseFloat(item.amount);
-
-            if (!monthlyData[monthKey]) {
-                monthlyData[monthKey] = 0;
+        const labels = data.labels;
+        const values = data.values.map(value => parseFloat(value)); // Convert string to number
+    
+        labels.forEach((label, index) => {
+            const date = new Date(); // Replace with actual logic to extract date
+            const month = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
+    
+            if (!monthlyData[month]) {
+                monthlyData[month] = 0;
             }
-
-            monthlyData[monthKey] += amount;
-            console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
+    
+            monthlyData[month] += values[index]; // Aggregate values by month
         });
-
-        console.log('Final monthly data:', monthlyData);
-
-        // Sort the months chronologically
-        const sortedMonths = Object.keys(monthlyData).sort();
-
+    
+        console.log('Monthly Data Aggregation:', monthlyData); // Log to debug aggregation
+    
         return {
-            labels: sortedMonths,
-            values: sortedMonths.map(month => monthlyData[month])
+            labels: Object.keys(monthlyData),
+            values: Object.values(monthlyData)
         };
     }
     
@@ -337,8 +317,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const ctx = canvas.getContext('2d');
     
         // Set canvas height and width dynamically if needed
-        canvas.height = 400;
-        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = 400;  // Set your desired height
+        canvas.width = canvas.parentElement.offsetWidth;  // Match the parent's width if desired
     
         return new Chart(ctx, {
             type: 'line',
@@ -353,25 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     tension: 0.4
                 }]
             },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        type: 'category',
-                        title: {
-                            display: true,
-                            text: 'Date'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Amount'
-                        },
-                        beginAtZero: true
-                    }
-                }
-            }
+            options: getLineChartOptions()
         });
     }
     
