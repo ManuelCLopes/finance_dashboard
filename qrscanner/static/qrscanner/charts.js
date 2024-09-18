@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             incomeData = data.labels.map((label, index) => ({
                 category: label,
                 amount: data.values[index],
-                date_received: label.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Default date if not found
+                date_received: data.values[index].match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Extract date from values array
             }));
         } else {
             console.error('Data format is incorrect:', data);
@@ -363,7 +363,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 responsive: true,
                 scales: {
                     x: {
-                        type: 'category',
+                        type: 'time',
+                        time: {
+                            unit: 'month',
+                            displayFormats: {
+                                month: 'MMM YYYY'
+                            }
+                        },
                         title: {
                             display: true,
                             text: 'Date'
