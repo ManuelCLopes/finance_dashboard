@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
         canvas.height = 400;  // Set your desired height
         canvas.width = canvas.parentElement.offsetWidth;  // Match the parent's width if desired
     
-        return new Chart(ctx, {
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: chartData.labels,
@@ -355,6 +355,9 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             options: getLineChartOptions()
         });
+
+        console.log('Chart instance:', chart);
+        return chart;
     }
     
 
