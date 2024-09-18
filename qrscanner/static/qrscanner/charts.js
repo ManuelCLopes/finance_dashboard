@@ -121,7 +121,14 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Aggregate the income data by month for the line chart
         const aggregatedIncomeData = aggregateDataByMonth(data.incomes);
-        console.log('Aggregated Income Data:', aggregatedIncomeData); // Log aggregated data for debugging
+        console.log('Aggregated Income Data:', aggregatedIncomeData);
+
+        if (aggregatedIncomeData.labels.length === 0 || aggregatedIncomeData.values.length === 0) {
+            console.error('No income data to display');
+            // You might want to display a message to the user here
+        } else {
+            charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
+        }
     
         // Aggregate expenses by category
         const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
@@ -135,11 +142,11 @@ document.addEventListener('DOMContentLoaded', function () {
         charts.push(drawChart('incomesChart', 'bar', aggregatedIncomes, 'Incomes', colors.income, colors.income));
         charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
         charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', EXPENSE_COLORS));
-        charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
         charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
     }
 
     function aggregateDataByMonth(data) {
+        console.log('Raw income data:', data);
         if (typeof data !== 'object' || !Array.isArray(data.labels) || !Array.isArray(data.values)) {
             console.error('Data format is incorrect:', data);
             return { labels: [], values: [] };
@@ -150,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const values = data.values.map(value => parseFloat(value));
 
         labels.forEach((label, index) => {
+            console.log('Processing label:', label);
             // Assuming the label contains the date in a format like "Category YYYY-MM-DD"
             const dateMatch = label.match(/\d{4}-\d{2}-\d{2}/);
             if (dateMatch) {
@@ -162,10 +170,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 monthlyData[monthKey] += values[index];
+                console.log(`Added ${values[index]} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
+            } else {
+                console.warn('No date found in label:', label);
             }
         });
 
-        console.log('Monthly Data Aggregation:', monthlyData);
+        console.log('Final monthly data:', monthlyData);
 
         // Sort the months chronologically
         const sortedMonths = Object.keys(monthlyData).sort();
@@ -321,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function drawLineChart(canvasId, chartData, label, borderColor) {
+        console.log('Drawing line chart with data:', chartData);
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext('2d');
     
