@@ -17,29 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const COLOR_JET_BLACK = 'rgba(14, 9, 0, 1)';
     const COLOR_CHARCOAL = '#1C1C1C';
 
-    const EXPENSE_COLORS = [
-        '#592E2D', // COLOR_HOT_CHOCOLATE
-        '#A57C55', // COLOR_GOLD_LEAF
-        '#008080', // COLOR_TEAL
-        '#004B3A', // COLOR_DARK_GREEN
-        '#3B3029', // COLOR_BLACK_COFFEE
-        '#2C3E50', // COLOR_NAVY_BLUE
-        '#B8860B', // COLOR_DARK_GOLDENROD
-        '#B00020', // COLOR_BURGUNDY
-        '#B39B72', // COLOR_TAN
-        '#2C2C2C', // COLOR_DARK_GRAY
-        '#696969', // COLOR_DIM_GRAY
-        '#1C1C1C', // COLOR_CHARCOAL
-        '#4A412A', // Darker variation of GOLD_LEAF
-        '#006666', // Darker variation of TEAL
-        '#23282D', // Darker variation of NAVY_BLUE
-        '#8B4513', // SaddleBrown
-        '#800000', // Maroon
-        '#556B2F', // DarkOliveGreen
-        '#483D8B', // DarkSlateBlue
-        '#2F4F4F'  // DarkSlateGray
-    ];
-
     let charts = []; // Array to store chart instances
 
     const themeSwitch = document.getElementById('theme-switch');
@@ -150,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
         console.log('Aggregated Expenses:', aggregatedExpenses); // Log aggregated data for debugging
     
-        // Render each chart as before, but use aggregatedExpenses for the expenses chart
         charts.push(drawChart('expensesChart', 'bar', aggregatedExpenses, 'Expenses by Category', colors.expense, colors.expense));
         charts.push(drawChart('incomesChart', 'bar', data.incomes, 'Incomes', colors.income, colors.income));
         charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
@@ -170,8 +146,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const values = data.values.map(value => parseFloat(value)); // Convert string to number
     
         labels.forEach((label, index) => {
-            // Assuming label is in format 'Salário' or similar, need to extract date from index or another structure if possible
-            // Here I will assume a dummy date, you need to replace this with actual logic to extract date
             const date = new Date(); // Replace with actual logic to extract date
             const month = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
     
@@ -218,7 +192,28 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
     
-    
+    const EXPENSE_COLORS = [
+        '#592E2D', // COLOR_HOT_CHOCOLATE
+        '#A57C55', // COLOR_GOLD_LEAF
+        '#008080', // COLOR_TEAL
+        '#004B3A', // COLOR_DARK_GREEN
+        '#3B3029', // COLOR_BLACK_COFFEE
+        '#2C3E50', // COLOR_NAVY_BLUE
+        '#B8860B', // COLOR_DARK_GOLDENROD
+        '#B00020', // COLOR_BURGUNDY
+        '#B39B72', // COLOR_TAN
+        '#2C2C2C', // COLOR_DARK_GRAY
+        '#696969', // COLOR_DIM_GRAY
+        '#1C1C1C', // COLOR_CHARCOAL
+        '#4A412A', // Darker variation of GOLD_LEAF
+        '#006666', // Darker variation of TEAL
+        '#23282D', // Darker variation of NAVY_BLUE
+        '#8B4513', // SaddleBrown
+        '#800000', // Maroon
+        '#556B2F', // DarkOliveGreen
+        '#483D8B', // DarkSlateBlue
+        '#2F4F4F'  // DarkSlateGray
+    ];
 
     function getThemeColors(theme) {
         if (theme === 'dark') {
