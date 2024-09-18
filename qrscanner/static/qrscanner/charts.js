@@ -125,7 +125,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (aggregatedIncomeData.labels.length === 0 || aggregatedIncomeData.values.length === 0) {
             console.error('No income data to display');
-            // You might want to display a message to the user here
+            // Display a message to the user
+            const incomeChartElement = document.getElementById('incomeLineChart');
+            if (incomeChartElement) {
+                incomeChartElement.innerHTML = '<p>No income data available to display.</p>';
+            }
         } else {
             charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
         }
@@ -149,9 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Raw income data:', data);
         let incomeData = [];
 
-        if (Array.isArray(data)) {
-            incomeData = data;
-        } else if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
+        if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
             incomeData = data.labels.map((label, index) => ({
                 category: label,
                 amount: data.values[index],
@@ -169,12 +171,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item.amount);
 
-            if (!monthlyData[monthKey]) {
-                monthlyData[monthKey] = 0;
+            if (!isNaN(amount)) {
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = 0;
+                }
+                monthlyData[monthKey] += amount;
+                console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
+            } else {
+                console.warn(`Invalid amount for ${item.category}: ${item.amount}`);
             }
-
-            monthlyData[monthKey] += amount;
-            console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
         });
 
         console.log('Final monthly data:', monthlyData);
