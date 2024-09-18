@@ -125,37 +125,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (aggregatedIncomeData.labels.length === 0 || aggregatedIncomeData.values.length === 0) {
             console.error('No income data to display');
-            // You might want to display a message to the user here
+            // Display a message to the user
+            const incomeChartElement = document.getElementById('incomeLineChart');
+            if (incomeChartElement) {
+                incomeChartElement.innerHTML = '<p>No income data available to display.</p>';
+            }
         } else {
             charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
         }
     
         // Aggregate expenses by category
         const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
-        console.log('Aggregated Expenses:', aggregatedExpenses); // Log aggregated data for debugging
+        console.log('Aggregated Expenses:', aggregatedExpenses);
     
-        // Aggregate and filter incomes, excluding categories ending with a year
-        const aggregatedIncomes = aggregateDataByCategory(data.incomes, true);
-        console.log('Aggregated Incomes:', aggregatedIncomes); // Log aggregated data for debugging
+        // Aggregate incomes by category
+        const aggregatedIncomes = aggregateDataByCategory(data.incomes);
+        console.log('Aggregated Incomes:', aggregatedIncomes);
+    
+        // Aggregate investments by category
+        const aggregatedInvestments = aggregateDataByCategory(data.investments);
+        console.log('Aggregated Investments:', aggregatedInvestments);
     
         charts.push(drawChart('expensesChart', 'bar', aggregatedExpenses, 'Expenses by Category', colors.expense, colors.expense));
         charts.push(drawChart('incomesChart', 'bar', aggregatedIncomes, 'Incomes', colors.income, colors.income));
-        charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
+        charts.push(drawChart('investmentsChart', 'bar', aggregatedInvestments, 'Investments', colors.investment, colors.investment));
         charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', EXPENSE_COLORS));
-        charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
+        charts.push(drawPieChart('investmentsPieChart', aggregatedInvestments, 'Investments Distribution', INVESTMENT_COLORS)); // New pie chart for investments
     }
 
     function aggregateDataByMonth(data) {
         console.log('Raw income data:', data);
         let incomeData = [];
 
-        if (Array.isArray(data)) {
-            incomeData = data;
-        } else if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
+        if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
             incomeData = data.labels.map((label, index) => ({
                 category: label,
                 amount: data.values[index],
-                date_received: label.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Default date if not found
+                date_received: data.values[index].match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Extract date from values array
             }));
         } else {
             console.error('Data format is incorrect:', data);
@@ -169,12 +175,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item.amount);
 
-            if (!monthlyData[monthKey]) {
-                monthlyData[monthKey] = 0;
+            if (!isNaN(amount)) {
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = 0;
+                }
+                monthlyData[monthKey] += amount;
+                console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
+            } else {
+                console.warn(`Invalid amount for ${item.category}: ${item.amount}`);
             }
-
-            monthlyData[monthKey] += amount;
-            console.log(`Added ${amount} to ${monthKey}. New total: ${monthlyData[monthKey]}`);
         });
 
         console.log('Final monthly data:', monthlyData);
@@ -272,6 +281,24 @@ document.addEventListener('DOMContentLoaded', function () {
         '#2F4F4F'  // DarkSlateGray
     ];
 
+    const INVESTMENT_COLORS = [
+        '#2F4F4F', // Dark Slate Gray
+        '#8B4513', // Saddle Brown
+        '#4A412A', // Dark Olive
+        '#373737', // Jet Black
+        '#1C1C1C', // Eerie Black
+        '#3C2F2F', // Dark Liver
+        '#4B3621', // Cafe Noir
+        '#3D3635', // Black Coffee
+        '#2C3539', // Gunmetal
+        '#3B3C36', // Black Olive
+        '#26252D', // Raisin Black
+        '#3C341F', // Olive Drab
+        '#2C3333', // Charcoal
+        '#2D2926', // Onyx
+        '#32174D', // Russian Violet
+    ];
+
     function getThemeColors(theme) {
         if (theme === 'dark') {
             return {
@@ -338,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const ctx = canvas.getContext('2d');
     
         // Set canvas height and width dynamically if needed
-        canvas.height = 400;
-        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = 400;  // Set your desired height
+        canvas.width = canvas.parentElement.offsetWidth;  // Match the parent's width if desired
     
         return new Chart(ctx, {
             type: 'line',
@@ -358,7 +385,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 responsive: true,
                 scales: {
                     x: {
-                        type: 'category',
+                        type: 'time',
+                        time: {
+                            unit: 'month',
+                            displayFormats: {
+                                month: 'MMM YYYY'
+                            }
+                        },
                         title: {
                             display: true,
                             text: 'Date'
