@@ -144,27 +144,35 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Data format is incorrect:', data);
             return { labels: [], values: [] };
         }
-    
+
         const monthlyData = {};
         const labels = data.labels;
-        const values = data.values.map(value => parseFloat(value)); // Convert string to number
-    
+        const values = data.values.map(value => parseFloat(value));
+
         labels.forEach((label, index) => {
-            const date = new Date(); // Replace with actual logic to extract date
-            const month = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
-    
-            if (!monthlyData[month]) {
-                monthlyData[month] = 0;
+            // Assuming the label contains the date in a format like "Category YYYY-MM-DD"
+            const dateMatch = label.match(/\d{4}-\d{2}-\d{2}/);
+            if (dateMatch) {
+                const fullDate = dateMatch[0];
+                const [year, month] = fullDate.split('-');
+                const monthKey = `${year}-${month}`;
+
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = 0;
+                }
+
+                monthlyData[monthKey] += values[index];
             }
-    
-            monthlyData[month] += values[index]; // Aggregate values by month
         });
-    
-        console.log('Monthly Data Aggregation:', monthlyData); // Log to debug aggregation
-    
+
+        console.log('Monthly Data Aggregation:', monthlyData);
+
+        // Sort the months chronologically
+        const sortedMonths = Object.keys(monthlyData).sort();
+
         return {
-            labels: Object.keys(monthlyData),
-            values: Object.values(monthlyData)
+            labels: sortedMonths,
+            values: sortedMonths.map(month => monthlyData[month])
         };
     }
     
