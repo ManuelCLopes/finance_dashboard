@@ -147,14 +147,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function aggregateDataByMonth(data) {
         console.log('Raw income data:', data);
-        if (!Array.isArray(data)) {
+        let incomeData = [];
+
+        if (Array.isArray(data)) {
+            incomeData = data;
+        } else if (data && Array.isArray(data.labels) && Array.isArray(data.values)) {
+            incomeData = data.labels.map((label, index) => ({
+                category: label,
+                amount: data.values[index],
+                date_received: label.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '1970-01-01' // Default date if not found
+            }));
+        } else {
             console.error('Data format is incorrect:', data);
             return { labels: [], values: [] };
         }
 
         const monthlyData = {};
 
-        data.forEach(item => {
+        incomeData.forEach(item => {
             const date = new Date(item.date_received);
             const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const amount = parseFloat(item.amount);
@@ -323,13 +333,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function drawLineChart(canvasId, chartData, label, borderColor) {
-        console.log('Drawing line chart with data:', chartData);
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext('2d');
     
         // Set canvas height and width dynamically if needed
-        canvas.height = 400;  // Set your desired height
-        canvas.width = canvas.parentElement.offsetWidth;  // Match the parent's width if desired
+        canvas.height = 400;
+        canvas.width = canvas.parentElement.offsetWidth;
     
         return new Chart(ctx, {
             type: 'line',
@@ -348,13 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 responsive: true,
                 scales: {
                     x: {
-                        type: 'time',
-                        time: {
-                            unit: 'month',
-                            displayFormats: {
-                                month: 'MMM YYYY'
-                            }
-                        },
+                        type: 'category',
                         title: {
                             display: true,
                             text: 'Date'
