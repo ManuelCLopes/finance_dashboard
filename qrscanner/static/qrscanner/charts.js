@@ -119,49 +119,51 @@ document.addEventListener('DOMContentLoaded', function () {
         const theme = document.documentElement.getAttribute('data-theme') || 'light';
         const colors = getThemeColors(theme);
     
-        // Aggregate the income data by month for the line chart
+        // Aggregate the income data
         const aggregatedIncomeData = aggregateDataByMonth(data.incomes);
-        console.log('Aggregated Income Data:', aggregatedIncomeData); // Log aggregated data for debugging
+        console.log('Aggregated Income Data:', aggregatedIncomeData);
     
         // Aggregate expenses by category
         const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
-        console.log('Aggregated Expenses:', aggregatedExpenses); // Log aggregated data for debugging
+        console.log('Aggregated Expenses:', aggregatedExpenses);
     
         // Aggregate and filter incomes, excluding categories ending with a year
         const aggregatedIncomes = aggregateDataByCategory(data.incomes, true);
-        console.log('Aggregated Incomes:', aggregatedIncomes); // Log aggregated data for debugging
+        console.log('Aggregated Incomes:', aggregatedIncomes);
+    
+        // Aggregate investments by category
+        const aggregatedInvestments = aggregateDataByCategory(data.investments);
+        console.log('Aggregated Investments:', aggregatedInvestments);
     
         charts.push(drawChart('expensesChart', 'bar', aggregatedExpenses, 'Expenses by Category', colors.expense, colors.expense));
         charts.push(drawChart('incomesChart', 'bar', aggregatedIncomes, 'Incomes', colors.income, colors.income));
-        charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
+        charts.push(drawChart('investmentsChart', 'bar', aggregatedInvestments, 'Investments', colors.investment, colors.investment));
         charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', EXPENSE_COLORS));
+        charts.push(drawPieChart('investmentsPieChart', aggregatedInvestments, 'Investments Distribution', INVESTMENT_COLORS));
         charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
-        charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
     }
 
     function aggregateDataByMonth(data) {
-        if (typeof data !== 'object' || !Array.isArray(data.labels) || !Array.isArray(data.values)) {
+        console.log('Raw income data:', data);
+        if (!Array.isArray(data.labels) || !Array.isArray(data.values)) {
             console.error('Data format is incorrect:', data);
             return { labels: [], values: [] };
         }
-    
+
         const monthlyData = {};
-        const labels = data.labels;
-        const values = data.values.map(value => parseFloat(value)); // Convert string to number
-    
-        labels.forEach((label, index) => {
-            const date = new Date(); // Replace with actual logic to extract date
-            const month = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
-    
-            if (!monthlyData[month]) {
-                monthlyData[month] = 0;
+        data.labels.forEach((label, index) => {
+            const value = parseFloat(data.values[index]);
+            if (!isNaN(value)) {
+                if (monthlyData[label]) {
+                    monthlyData[label] += value;
+                } else {
+                    monthlyData[label] = value;
+                }
             }
-    
-            monthlyData[month] += values[index]; // Aggregate values by month
         });
-    
-        console.log('Monthly Data Aggregation:', monthlyData); // Log to debug aggregation
-    
+
+        console.log('Final monthly data:', monthlyData);
+
         return {
             labels: Object.keys(monthlyData),
             values: Object.values(monthlyData)
@@ -252,6 +254,24 @@ document.addEventListener('DOMContentLoaded', function () {
         '#2F4F4F'  // DarkSlateGray
     ];
 
+    const INVESTMENT_COLORS = [
+        '#2F4F4F', // Dark Slate Gray
+        '#8B4513', // Saddle Brown
+        '#4A412A', // Dark Olive
+        '#373737', // Jet Black
+        '#1C1C1C', // Eerie Black
+        '#3C2F2F', // Dark Liver
+        '#4B3621', // Cafe Noir
+        '#3D3635', // Black Coffee
+        '#2C3539', // Gunmetal
+        '#3B3C36', // Black Olive
+        '#26252D', // Raisin Black
+        '#3C341F', // Olive Drab
+        '#2C3333', // Charcoal
+        '#2D2926', // Onyx
+        '#32174D', // Russian Violet
+    ];
+
     function getThemeColors(theme) {
         if (theme === 'dark') {
             return {
@@ -313,13 +333,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function drawLineChart(canvasId, chartData, label, borderColor) {
+        console.log('Drawing line chart with data:', chartData);
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext('2d');
-    
-        // Set canvas height and width dynamically if needed
-        canvas.height = 400;  // Set your desired height
-        canvas.width = canvas.parentElement.offsetWidth;  // Match the parent's width if desired
-    
+
         return new Chart(ctx, {
             type: 'line',
             data: {
@@ -333,34 +350,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     tension: 0.4
                 }]
             },
-            options: getLineChartOptions()
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Category'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Amount'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
         });
     }
     
-
-    function drawStackedBarChart(canvasId, chartData, colors) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        return new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: chartData.labels,
-                datasets: [{
-                    label: 'Investment Type 1',
-                    data: chartData.values,
-                    backgroundColor: colors[0],
-                    borderColor: colors[0],
-                    borderWidth: 2
-                }, {
-                    label: 'Investment Type 2',
-                    data: chartData.values.map(value => value / 2),
-                    backgroundColor: colors[1],
-                    borderColor: colors[1],
-                    borderWidth: 2
-                }]
-            },
-            options: getStackedBarChartOptions()
-        });
-    }
 
     function lightenColor(color, percent) {
         const num = parseInt(color.slice(1), 16),
