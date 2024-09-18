@@ -45,6 +45,7 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'finance_dashboard.urls'
+SECURE_SSL_REDIRECT = True
 
 TEMPLATES = [
     {

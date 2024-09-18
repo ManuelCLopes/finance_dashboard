@@ -119,17 +119,41 @@ document.addEventListener('DOMContentLoaded', function () {
         const theme = document.documentElement.getAttribute('data-theme') || 'light';
         const colors = getThemeColors(theme);
     
-        // Aggregate the income data by month for the line chart
-        const aggregatedIncomeData = aggregateDataByMonth(data.incomes);
-        console.log('Aggregated Income Data:', aggregatedIncomeData); // Log aggregated data for debugging
+        // Aggregate expenses by category
+        const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
+        console.log('Aggregated Expenses:', aggregatedExpenses); // Log aggregated data for debugging
     
-        // Render each chart as before
-        charts.push(drawChart('expensesChart', 'bar', data.expenses, 'Expenses', colors.expense, colors.expense));
+        // Render each chart as before, but use aggregatedExpenses for the expenses chart
+        charts.push(drawChart('expensesChart', 'bar', aggregatedExpenses, 'Expenses by Category', colors.expense, colors.expense));
         charts.push(drawChart('incomesChart', 'bar', data.incomes, 'Incomes', colors.income, colors.income));
         charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
-        charts.push(drawPieChart('expensesPieChart', data.expenses, 'Expenses Distribution', [colors.expense, colors.income]));
-        charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
+        charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', [colors.expense, colors.income]));
+        charts.push(drawLineChart('incomeLineChart', aggregateDataByMonth(data.incomes), 'Income Over Time', colors.line));
         charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
+    }
+
+    function aggregateExpensesByCategory(expenses) {
+        if (!expenses || !expenses.labels || !expenses.values) {
+            console.error('Invalid expenses data:', expenses);
+            return { labels: [], values: [] };
+        }
+
+        const categoryTotals = {};
+        expenses.labels.forEach((label, index) => {
+            const value = parseFloat(expenses.values[index]);
+            if (!isNaN(value)) {
+                if (categoryTotals[label]) {
+                    categoryTotals[label] += value;
+                } else {
+                    categoryTotals[label] = value;
+                }
+            }
+        });
+
+        return {
+            labels: Object.keys(categoryTotals),
+            values: Object.values(categoryTotals)
+        };
     }
 
     function aggregateDataByMonth(data) {
