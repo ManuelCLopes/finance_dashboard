@@ -150,9 +150,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        // Sort categories by value in descending order
+        const sortedCategories = Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1]);
+
         return {
-            labels: Object.keys(categoryTotals),
-            values: Object.values(categoryTotals)
+            labels: sortedCategories.map(item => item[0]),
+            values: sortedCategories.map(item => item[1])
         };
     }
 
