@@ -17,6 +17,29 @@ document.addEventListener('DOMContentLoaded', function () {
     const COLOR_JET_BLACK = 'rgba(14, 9, 0, 1)';
     const COLOR_CHARCOAL = '#1C1C1C';
 
+    const EXPENSE_COLORS = [
+        '#592E2D', // COLOR_HOT_CHOCOLATE
+        '#A57C55', // COLOR_GOLD_LEAF
+        '#008080', // COLOR_TEAL
+        '#004B3A', // COLOR_DARK_GREEN
+        '#3B3029', // COLOR_BLACK_COFFEE
+        '#2C3E50', // COLOR_NAVY_BLUE
+        '#B8860B', // COLOR_DARK_GOLDENROD
+        '#B00020', // COLOR_BURGUNDY
+        '#B39B72', // COLOR_TAN
+        '#2C2C2C', // COLOR_DARK_GRAY
+        '#696969', // COLOR_DIM_GRAY
+        '#1C1C1C', // COLOR_CHARCOAL
+        '#4A412A', // Darker variation of GOLD_LEAF
+        '#006666', // Darker variation of TEAL
+        '#23282D', // Darker variation of NAVY_BLUE
+        '#8B4513', // SaddleBrown
+        '#800000', // Maroon
+        '#556B2F', // DarkOliveGreen
+        '#483D8B', // DarkSlateBlue
+        '#2F4F4F'  // DarkSlateGray
+    ];
+
     let charts = []; // Array to store chart instances
 
     const themeSwitch = document.getElementById('theme-switch');
@@ -119,18 +142,54 @@ document.addEventListener('DOMContentLoaded', function () {
         const theme = document.documentElement.getAttribute('data-theme') || 'light';
         const colors = getThemeColors(theme);
     
+        // Aggregate the income data by month for the line chart
+        const aggregatedIncomeData = aggregateDataByMonth(data.incomes);
+        console.log('Aggregated Income Data:', aggregatedIncomeData); // Log aggregated data for debugging
+    
         // Aggregate expenses by category
         const aggregatedExpenses = aggregateExpensesByCategory(data.expenses);
         console.log('Aggregated Expenses:', aggregatedExpenses); // Log aggregated data for debugging
     
+        // Render each chart as before, but use aggregatedExpenses for the expenses chart
         charts.push(drawChart('expensesChart', 'bar', aggregatedExpenses, 'Expenses by Category', colors.expense, colors.expense));
         charts.push(drawChart('incomesChart', 'bar', data.incomes, 'Incomes', colors.income, colors.income));
         charts.push(drawChart('investmentsChart', 'bar', data.investments, 'Investments', colors.investment, colors.investment));
         charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', EXPENSE_COLORS));
-        charts.push(drawLineChart('incomeLineChart', aggregateDataByMonth(data.incomes), 'Income Over Time', colors.line));
+        charts.push(drawLineChart('incomeLineChart', aggregatedIncomeData, 'Income Over Time', colors.line));
         charts.push(drawStackedBarChart('investmentsStackedBarChart', data.investments, [colors.investmentType1, colors.investmentType2]));
     }
 
+    function aggregateDataByMonth(data) {
+        if (typeof data !== 'object' || !Array.isArray(data.labels) || !Array.isArray(data.values)) {
+            console.error('Data format is incorrect:', data);
+            return { labels: [], values: [] };
+        }
+    
+        const monthlyData = {};
+        const labels = data.labels;
+        const values = data.values.map(value => parseFloat(value)); // Convert string to number
+    
+        labels.forEach((label, index) => {
+            // Assuming label is in format 'Salário' or similar, need to extract date from index or another structure if possible
+            // Here I will assume a dummy date, you need to replace this with actual logic to extract date
+            const date = new Date(); // Replace with actual logic to extract date
+            const month = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
+    
+            if (!monthlyData[month]) {
+                monthlyData[month] = 0;
+            }
+    
+            monthlyData[month] += values[index]; // Aggregate values by month
+        });
+    
+        console.log('Monthly Data Aggregation:', monthlyData); // Log to debug aggregation
+    
+        return {
+            labels: Object.keys(monthlyData),
+            values: Object.values(monthlyData)
+        };
+    }
+    
     function aggregateExpensesByCategory(expenses) {
         if (!expenses || !expenses.labels || !expenses.values) {
             console.error('Invalid expenses data:', expenses);
@@ -156,42 +215,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return {
             labels: sortedCategories.map(item => item[0]),
             values: sortedCategories.map(item => item[1])
-        };
-    }
-
-    const EXPENSE_COLORS = [
-        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
-        '#F06292', '#AED581', '#7986CB', '#FFD54F', '#4DB6AC',
-        '#9575CD', '#4DD0E1', '#81C784', '#DCE775', '#64B5F6',
-        '#FFB74D', '#A1887F', '#90A4AE', '#BA68C8', '#F06292'
-    ];
-
-    function aggregateDataByMonth(data) {
-        if (typeof data !== 'object' || !Array.isArray(data.labels) || !Array.isArray(data.values)) {
-            console.error('Data format is incorrect:', data);
-            return { labels: [], values: [] };
-        }
-    
-        const monthlyData = {};
-        const labels = data.labels;
-        const values = data.values.map(value => parseFloat(value)); // Convert string to number
-    
-        labels.forEach((label, index) => {
-            const date = new Date(); // Replace with actual logic to extract date
-            const month = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
-    
-            if (!monthlyData[month]) {
-                monthlyData[month] = 0;
-            }
-    
-            monthlyData[month] += values[index]; // Aggregate values by month
-        });
-    
-        console.log('Monthly Data Aggregation:', monthlyData); // Log to debug aggregation
-    
-        return {
-            labels: Object.keys(monthlyData),
-            values: Object.values(monthlyData)
         };
     }
     
