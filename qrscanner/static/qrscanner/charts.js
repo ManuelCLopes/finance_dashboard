@@ -147,23 +147,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const monthlyData = {};
         data.labels.forEach((label, index) => {
             const date = new Date(label);
-            const monthYear = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+            const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const value = parseFloat(data.values[index]);
+    
             if (!isNaN(value)) {
                 monthlyData[monthYear] = (monthlyData[monthYear] || 0) + value;
             }
         });
-
-        // Sort the entries by date
-        const sortedEntries = Object.entries(monthlyData).sort((a, b) => {
-            return new Date(a[0]) - new Date(b[0]);
-        });
-
+    
+        // Sort the entries by the actual month-year format
+        const sortedEntries = Object.entries(monthlyData).sort((a, b) => a[0].localeCompare(b[0]));
+    
         return {
             labels: sortedEntries.map(entry => entry[0]),
             values: sortedEntries.map(entry => entry[1])
         };
-    }
+    }    
     
     function aggregateExpensesByCategory(expenses) {
         if (!expenses || !expenses.labels || !expenses.values) {
