@@ -144,25 +144,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function aggregateDataByMonth(data) {
-        console.log('Raw income data:', data);
-        if (!Array.isArray(data.labels) || !Array.isArray(data.values)) {
-            console.error('Data format is incorrect:', data);
-            return { labels: [], values: [] };
-        }
-
         const monthlyData = {};
         data.labels.forEach((label, index) => {
+            const date = new Date(label);
+            const monthYear = date.toLocaleString('default', { month: 'short', year: 'numeric' });
             const value = parseFloat(data.values[index]);
             if (!isNaN(value)) {
-                if (monthlyData[label]) {
-                    monthlyData[label] += value;
-                } else {
-                    monthlyData[label] = value;
-                }
+                monthlyData[monthYear] = (monthlyData[monthYear] || 0) + value;
             }
         });
-
-        console.log('Final monthly data:', monthlyData);
 
         return {
             labels: Object.keys(monthlyData),
