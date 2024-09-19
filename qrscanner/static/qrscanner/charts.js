@@ -145,16 +145,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function aggregateDataByMonth(data) {
         const monthlyData = {};
+        
         data.labels.forEach((label, index) => {
+            // Explicitly parse the date, assuming label is in YYYY-MM-DD format
             let date;
             try {
                 date = new Date(label);
-                if (isNaN(date.getTime())) throw new Error('Invalid Date');
-            } catch (error) {
+                if (isNaN(date)) throw new Error('Invalid Date');
+            } catch (e) {
                 console.error(`Error parsing date: ${label}`);
                 return;
             }
     
+            // Format date as YYYY-MM
             const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const value = parseFloat(data.values[index]);
     
@@ -166,11 +169,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // Sort the entries by the actual month-year format
         const sortedEntries = Object.entries(monthlyData).sort((a, b) => a[0].localeCompare(b[0]));
     
+        console.log('Sorted Monthly Data:', sortedEntries);
+    
         return {
             labels: sortedEntries.map(entry => entry[0]),
             values: sortedEntries.map(entry => entry[1])
         };
-    }       
+    }
+           
     
     function aggregateExpensesByCategory(expenses) {
         if (!expenses || !expenses.labels || !expenses.values) {
