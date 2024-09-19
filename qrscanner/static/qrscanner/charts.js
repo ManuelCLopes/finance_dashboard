@@ -146,7 +146,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function aggregateDataByMonth(data) {
         const monthlyData = {};
         data.labels.forEach((label, index) => {
-            const date = new Date(label);
+            let date;
+            try {
+                date = new Date(label);
+                if (isNaN(date.getTime())) throw new Error('Invalid Date');
+            } catch (error) {
+                console.error(`Error parsing date: ${label}`);
+                return;
+            }
+    
             const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
             const value = parseFloat(data.values[index]);
     
@@ -162,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
             labels: sortedEntries.map(entry => entry[0]),
             values: sortedEntries.map(entry => entry[1])
         };
-    }    
+    }       
     
     function aggregateExpensesByCategory(expenses) {
         if (!expenses || !expenses.labels || !expenses.values) {
