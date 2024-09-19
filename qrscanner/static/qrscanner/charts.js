@@ -154,9 +154,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        // Sort the entries by date
+        const sortedEntries = Object.entries(monthlyData).sort((a, b) => {
+            return new Date(a[0]) - new Date(b[0]);
+        });
+
         return {
-            labels: Object.keys(monthlyData),
-            values: Object.values(monthlyData)
+            labels: sortedEntries.map(entry => entry[0]),
+            values: sortedEntries.map(entry => entry[1])
         };
     }
     
