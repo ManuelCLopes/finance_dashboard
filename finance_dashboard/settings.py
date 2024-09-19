@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True' 
 
-ALLOWED_HOSTS = ['http://financetracker.pt', 'www.financetracker.pt','finance-tracker-5c42401d1c26.herokuapp.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['financetracker.pt', 'www.financetracker.pt','finance-tracker-5c42401d1c26.herokuapp.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
