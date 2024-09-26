@@ -7,6 +7,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
         fields = ['category', 'amount', 'date_spent']
 
 class IncomeSerializer(serializers.ModelSerializer):
+    date_received = serializers.DateField(format="%Y-%m-%d")  
     class Meta:
         model = Income
         fields = ['category', 'amount', 'tax_amount', 'date_received']

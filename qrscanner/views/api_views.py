@@ -54,36 +54,44 @@ def receive_all_data(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 def fetch_data(request):
-    # Check if data has been received
-    data_received = request.session.get('data_received', False)
+    try:
+        data_received = request.session.get('data_received', False)
+        if data_received:
+            expenses = Expense.objects.values('category', 'amount', 'date_spent')
+            incomes = Income.objects.values('category', 'amount', 'tax_amount', 'date_received')
+            investments = Investment.objects.values('investment_type', 'initial_value', 'date_invested')
 
-    if data_received:
-        # Fetch the data from the database
-        expenses = Expense.objects.values('category', 'amount', 'date_spent')
-        incomes = Income.objects.values('category', 'amount', 'date_received')
-        investments = Investment.objects.values('investment_type', 'initial_value', 'date_invested')
+            expenses_data = {
+                'labels': [e['category'] for e in expenses],
+                'values': [e['amount'] for e in expenses]
+            }
+            incomes_data = {
+                'sources': [
+                    {
+                        'source': i['category'],
+                        'date': i['date_received'].strftime('%Y-%m-%d'),
+                        'amount': i['amount'],
+                        'taxes': i['tax_amount'],
+                    }
+                    for i in incomes
+                ]
+            }
+            investments_data = {
+                'labels': [inv['investment_type'] for inv in investments],
+                'values': [inv['initial_value'] for inv in investments]
+            }
 
-        expenses_data = {
-            'labels': [e['category'] for e in expenses],
-            'values': [e['amount'] for e in expenses]
-        }
-        incomes_data = {
-            'labels': [i['category'] for i in incomes],
-            'values': [i['amount'] for i in incomes]
-        }
-        investments_data = {
-            'labels': [inv['investment_type'] for inv in investments],
-            'values': [inv['initial_value'] for inv in investments]
-        }
-
-        return JsonResponse({
-            'data_available': True,
-            'expenses': expenses_data,
-            'incomes': incomes_data,
-            'investments': investments_data
-        })
-    else:
-        return JsonResponse({'data_available': False})
+            return JsonResponse({
+                'data_available': True,
+                'expenses': expenses_data,
+                'incomes': incomes_data,  # Certifique-se de que a chave 'incomes' é retornada com 'sources'
+                'investments': investments_data
+            })
+        else:
+            return JsonResponse({'data_available': False})
+    except Exception as e:
+        print(f"Error fetching data: {e}")  # Loga o erro
+        return JsonResponse({'error': 'Failed to fetch data'}, status=500)
 
 @api_view(['GET'])
 def fetch_detailed_data(request):
