@@ -27,7 +27,6 @@ export function enableCardClick() {
             document.getElementById('selected-chart-table-container').style.display = 'flex';
             document.getElementById('data-table-container').style.display = 'block';
 
-            // Função para buscar e exibir os dados detalhados da tabela
             fetchDetailedData(card.dataset.table);
         });
     });

@@ -3,7 +3,6 @@ import { lightenColor } from './colorUtils.js';
 export function drawChart(canvasId, chartType, chartData, label, bgColor, borderColor, chartOptions) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     
-    // Destruir o gráfico existente antes de criar um novo
     if (Chart.getChart(canvasId)) {
         Chart.getChart(canvasId).destroy();
     }
@@ -29,7 +28,6 @@ export function drawChart(canvasId, chartType, chartData, label, bgColor, border
 export function drawPieChart(canvasId, chartData, label, colors, chartOptions) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     
-    // Destruir o gráfico existente antes de criar um novo
     if (Chart.getChart(canvasId)) {
         Chart.getChart(canvasId).destroy();
     }

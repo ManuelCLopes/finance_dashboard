@@ -104,7 +104,6 @@ function populateTable(tableData) {
     const tableHeaders = document.getElementById('table-headers');
     const tableBody = document.getElementById('table-body');
 
-    // Limpar a tabela antes de popular com novos dados
     tableHeaders.innerHTML = '';
     tableBody.innerHTML = '';
 
@@ -132,7 +131,6 @@ function populateTable(tableData) {
         'tax_amount': 'Tax applied'
     };
 
-    // Popular cabeçalhos da tabela
     const headers = Object.keys(tableData[0] || {});
     headers.forEach(header => {
         const th = document.createElement('th');
@@ -140,7 +138,6 @@ function populateTable(tableData) {
         tableHeaders.appendChild(th);
     });
 
-    // Popular corpo da tabela com os dados
     tableData.forEach(row => {
         const tr = document.createElement('tr');
         headers.forEach(header => {

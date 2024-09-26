@@ -1,6 +1,6 @@
 export function getBarChartOptions() {
     const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-    const labelColor = isDarkMode ? '#FAFAFA' : '#333'; // Cor para as labels e eixos
+    const labelColor = isDarkMode ? '#FAFAFA' : '#333';
 
     return {
         responsive: true,
@@ -35,7 +35,7 @@ export function getBarChartOptions() {
                 grid: {
                     display: false
                 },
-                ticks: { // Atualizar a cor dos labels do eixo X
+                ticks: { 
                     color: labelColor
                 }
             },
@@ -44,7 +44,7 @@ export function getBarChartOptions() {
                 grid: {
                     color: isDarkMode ? '#555' : '#eee'
                 },
-                ticks: { // Atualizar a cor dos labels do eixo Y
+                ticks: { 
                     color: labelColor
                 }
             }
