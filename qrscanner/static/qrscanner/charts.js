@@ -102,18 +102,18 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/fetch_data/')
             .then(response => response.json())
             .then(data => {
-                console.log('Fetched Data:', data); // Log fetched data for debugging
                 if (data.data_available) {
                     document.getElementById('qr-code-container').style.display = 'none';
                     document.getElementById('charts-container').style.display = 'block';
+
                     renderCharts(data);
-                    enableCardClick(data);
+                    enableCardClick();
                 } else {
                     setTimeout(checkForData, 5000);
                 }
             })
             .catch(error => console.error('Error fetching data:', error));
-    }
+        }
 
     function renderCharts(data) {
         const theme = document.documentElement.getAttribute('data-theme') || 'light';

@@ -12,9 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True' 
+DEBUG = True
 
-ALLOWED_HOSTS = ['financetracker.pt', 'www.financetracker.pt','finance-tracker-5c42401d1c26.herokuapp.com']
+ALLOWED_HOSTS = ['financetracker.pt', 'www.financetracker.pt','finance-tracker-5c42401d1c26.herokuapp.com', 'localhost', '127.0.0.1', '0.0.0.0']
 
 # Application definition
 
@@ -45,7 +45,7 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'finance_dashboard.urls'
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
 TEMPLATES = [
     {

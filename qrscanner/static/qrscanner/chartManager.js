@@ -3,7 +3,6 @@ import { getBarChartOptions, getPieChartOptions, getLineChartOptions } from './c
 import { aggregateDataByMonth, aggregateIncomeBySource, aggregateExpensesByCategory, aggregateInvestmentsByCategory } from './dataAggregator.js';
 import { EXPENSE_COLORS, INVESTMENT_COLORS, COLORS } from './constants.js';
 
-
 let charts = [];
 
 export function updateChartColors() {
@@ -18,6 +17,8 @@ export function checkForData() {
         .then(response => response.json())
         .then(data => {
             if (data.data_available) {
+                // When data is available, trigger the animation and hide the QR code
+                handleDataAvailable();
                 renderCharts(data);
             } else {
                 setTimeout(checkForData, 5000);
@@ -38,4 +39,28 @@ export function renderCharts(data) {
     charts.push(drawPieChart('expensesPieChart', aggregatedExpenses, 'Expenses Distribution', EXPENSE_COLORS, getPieChartOptions()));
     charts.push(drawChart('investmentsChart', 'bar', aggregatedInvestments, 'Investments Breakdown', COLORS.TEAL, COLORS.TEAL, getBarChartOptions()));
     charts.push(drawPieChart('investmentsPieChart', aggregatedInvestments, 'Investments Distribution', INVESTMENT_COLORS, getPieChartOptions()));
+}
+
+// This function will handle the UI changes when data is available
+function handleDataAvailable() {
+    // Hide the QR code section and display the charts
+    document.getElementById('qr-code-container').style.display = 'none';
+    document.getElementById('charts-container').style.display = 'block';
+
+    // Trigger the animation for the title moving to the navbar
+    moveTitleToNavbar();
+}
+
+// Animate the "Finance Dashboard" title to move to the navbar
+function moveTitleToNavbar() {
+    const title = document.getElementById('title');
+    const navbar = document.querySelector('.navbar');
+
+    // Add CSS class to trigger animation (CSS needed in styles)
+    title.classList.add('move-to-navbar');
+
+    // After the animation, append the title to the navbar
+    setTimeout(() => {
+        navbar.appendChild(title);
+    }, 1000); // Adjust timeout based on your animation duration
 }
